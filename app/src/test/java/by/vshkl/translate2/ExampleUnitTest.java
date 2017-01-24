@@ -1,4 +1,4 @@
-package by.vshkl.translate;
+package by.vshkl.translate2;
 
 import org.junit.Test;
 

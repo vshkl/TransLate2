@@ -1,4 +1,4 @@
-package by.vshkl.translate;
+package by.vshkl.translate2;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
