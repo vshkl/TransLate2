@@ -249,8 +249,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
             if (zoom >= ZOOM_STREET) {
                 if (latLngBounds.contains(latLng)) {
                     if (!visibleMarkers.containsKey(stop.getId())) {
-                        Marker marker = map.addMarker(
-                                new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker()));
+                        Marker marker = map.addMarker(new MarkerOptions()
+                                .position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place)));
                         visibleMarkers.put(stop.getId(), marker);
                     }
                 } else {
