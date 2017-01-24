@@ -38,6 +38,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         setContentView(R.layout.activity_map);
         ButterKnife.bind(MapActivity.this);
         initializeMap();
+        presenter.checkStopsUpdate();
     }
 
     //------------------------------------------------------------------------------------------------------------------

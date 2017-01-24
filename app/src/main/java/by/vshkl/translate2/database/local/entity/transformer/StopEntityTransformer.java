@@ -1,9 +1,9 @@
-package by.vshkl.translate2.database.entity.transformer;
+package by.vshkl.translate2.database.local.entity.transformer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import by.vshkl.translate2.database.entity.StopEntity;
+import by.vshkl.translate2.database.local.entity.StopEntity;
 import by.vshkl.translate2.mvp.model.Stop;
 
 public class StopEntityTransformer {
