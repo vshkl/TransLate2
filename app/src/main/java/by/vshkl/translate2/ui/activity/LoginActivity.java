@@ -50,7 +50,7 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.equals(URL_LOGGED)) {
                     presenter.saveCookies(getApplicationContext(), CookieManager.getInstance().getCookie(url));
-                    startActivity(MainActivity.newIntent(LoginActivity.this));
+                    startActivity(MapActivity.newIntent(LoginActivity.this));
                     finish();
                 }
                 return super.shouldOverrideUrlLoading(view, url);
@@ -62,7 +62,7 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
                 if (request.getUrl().toString().equals(URL_LOGGED)) {
                     presenter.saveCookies(getApplicationContext(),
                             CookieManager.getInstance().getCookie(request.getUrl().toString()));
-                    startActivity(MainActivity.newIntent(LoginActivity.this));
+                    startActivity(MapActivity.newIntent(LoginActivity.this));
                     finish();
                 }
                 return super.shouldOverrideUrlLoading(view, request);

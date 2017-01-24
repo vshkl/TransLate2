@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,6 +18,13 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key"/>
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="TransLate2.db"/>
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1"/>
+
         <activity android:name="by.vshkl.translate2.ui.activity.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -25,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name="by.vshkl.translate2.ui.activity.LoginActivity"/>
-        <activity android:name="by.vshkl.translate2.ui.activity.MainActivity"/>
+        <activity android:name="by.vshkl.translate2.ui.activity.MapActivity"/>
     </application>
 
 </manifest>
