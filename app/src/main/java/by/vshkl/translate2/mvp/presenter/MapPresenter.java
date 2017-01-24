@@ -23,6 +23,14 @@ public class MapPresenter extends MvpPresenter<MapView> {
     private Disposable disposable;
     private List<Stop> stopList;
 
+    @Override
+    public void onDestroy() {
+        if (disposable != null) {
+            disposable.dispose();
+        }
+        super.onDestroy();
+    }
+
     public void checkStopsUpdate() {
         disposable = DbUtils.isStopsTableEmpty()
                 .subscribeOn(Schedulers.io())
