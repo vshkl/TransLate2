@@ -4,21 +4,28 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 
 import butterknife.BindView;
@@ -33,16 +40,21 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+;
+
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapReadyCallback {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_STREET = 15F;
+    private static final double DEFAULT_LATITUDE = 53.9024429;
+    private static final double DEFAULT_LONGITUDE = 27.5614649;
 
     @BindView(R.id.root) CoordinatorLayout clRoot;
 
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +62,20 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         setContentView(R.layout.activity_map);
         ButterKnife.bind(MapActivity.this);
         initializeMap();
+        initializeGoogleApiClient();
         presenter.checkStopsUpdate();
+    }
+
+    @Override
+    protected void onStart() {
+        googleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        googleApiClient.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -71,7 +96,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
-        this.map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(53.9024429, 27.5614649), ZOOM_CITY));
+        UiSettings settings = this.map.getUiSettings();
+        settings.setCompassEnabled(false);
+        settings.setMyLocationButtonEnabled(false);
+        this.map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), ZOOM_CITY));
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -92,6 +121,36 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void updateCoordinates() {
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        boolean networkProviderEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean gpsProviderEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (networkProviderEnabled || gpsProviderEnabled) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            if (location != null) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                map.setMyLocationEnabled(true);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_STREET));
+            }
+        } else {
+            new AlertDialog.Builder(MapActivity.this)
+                    .setMessage(R.string.map_location_message)
+                    .setPositiveButton(R.string.map_location_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            showLocationSettings();
+                        }
+                    })
+                    .setNegativeButton(R.string.map_location_cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .show();
+        }
 
     }
 
@@ -139,6 +198,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         mapFragment.getMapAsync(MapActivity.this);
     }
 
+    private void initializeGoogleApiClient() {
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(MapActivity.this).addApi(LocationServices.API).build();
+        }
+    }
+
     private void showAppSettings() {
         final Intent intent = new Intent();
         intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -147,6 +212,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        startActivity(intent);
+    }
+
+    private void showLocationSettings() {
+        final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
     }
 }

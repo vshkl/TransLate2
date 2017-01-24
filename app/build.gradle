@@ -57,6 +57,7 @@ dependencies {
     compile 'com.google.firebase:firebase-crash:10.0.1'
     compile 'com.google.firebase:firebase-database:10.0.1'
     compile 'com.google.android.gms:play-services-maps:10.0.1'
+    compile 'com.google.android.gms:play-services-location:10.0.1'
     // ORM
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     // Permissions
