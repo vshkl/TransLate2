@@ -8,7 +8,7 @@ android {
         applicationId "by.vshkl.translate2"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 0
+        versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "ENCRYPTED_PREFERENCES_PWD", ENCRYPTED_PREFERENCES_PWD)
@@ -51,4 +51,10 @@ dependencies {
     compile 'com.pddstudio:encrypted-preferences:1.2.0'
     // Network
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    // Services
+    compile 'com.google.firebase:firebase-core:10.0.1'
+    compile 'com.google.firebase:firebase-crash:10.0.1'
+    compile 'com.google.android.gms:play-services-maps:10.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

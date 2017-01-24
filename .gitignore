@@ -51,3 +51,6 @@ captures/
 app/google-services.json
 app/src/debug/google-services.json
 gradle.properties
+
+app/src/main/res/values/google_maps_api.xml
+app/src/debug/res/values/google_maps_api.xml
