@@ -20,7 +20,7 @@ public class SplashScreenActivity extends MvpAppCompatActivity implements Splash
 
     @Override
     public void onLoggedIn() {
-        startActivity(MainActivity.newIntent(this));
+        startActivity(MapActivity.newIntent(this));
         finish();
     }
 
