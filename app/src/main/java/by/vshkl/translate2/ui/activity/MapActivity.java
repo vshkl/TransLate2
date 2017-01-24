@@ -6,10 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -37,7 +37,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_STREET = 15F;
 
-    @BindView(R.id.root) FrameLayout flRoot;
+    @BindView(R.id.root) CoordinatorLayout clRoot;
 
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
@@ -76,7 +76,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     @Override
     public void showUpdateStopsSnackbar() {
-        final Snackbar snackbar = Snackbar.make(flRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE);
+        final Snackbar snackbar = Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.map_update_stops_update, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +115,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
-        final Snackbar snackbar = Snackbar.make(flRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG);
+        final Snackbar snackbar = Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.map_permission_denied_settings, new View.OnClickListener() {
             @Override
             public void onClick(View v) {

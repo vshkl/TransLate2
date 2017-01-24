@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
@@ -25,6 +25,8 @@
         android:layout_margin="8dp"
         app:srcCompat="@drawable/ic_location_my"
         app:fabSize="normal"
+        app:layout_anchor="@id/fr_map"
+        app:layout_anchorGravity="bottom|center"
         />
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
