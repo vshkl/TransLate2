@@ -2,15 +2,21 @@
     <string name="app_name">TransLate</string>
 
     <!-- Preferences -->
+
     <string name="pref_key_cookies" translatable="false">pref_key_cookies</string>
     
     <!-- Login screen -->
+
     <string name="login_hint_email">Email</string>
     <string name="login_hint_password">Password</string>
     <string name="login_hint_captcha">Captcha</string>
     <string name="login_button_login">Login</string>
     
     <!-- Map screen -->
+
+    <string name="map_update_stops_message">Stops need to be updated.</string>
+    <string name="map_update_stops_update">UPDATE</string>
+
     <string name="map_permission_rationale_title">Location</string>
     <string name="map_permission_rationale_message">We need location to determine you position and show nearest stops.</string>
     <string name="map_permission_rationale_allow">ALLOW</string>

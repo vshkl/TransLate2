@@ -76,8 +76,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     @Override
     public void showUpdateStopsSnackbar() {
-        final Snackbar snackbar = Snackbar.make(flRoot, "Update stops", Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("Update", new View.OnClickListener() {
+        final Snackbar snackbar = Snackbar.make(flRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.map_update_stops_update, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 presenter.getAppStopsFromRemoteDatabase();
