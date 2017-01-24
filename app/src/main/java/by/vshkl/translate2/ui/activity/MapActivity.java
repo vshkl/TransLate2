@@ -26,12 +26,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import by.vshkl.translate2.R;
+import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
 import permissions.dispatcher.NeedsPermission;
@@ -55,6 +63,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
+    private HashMap<Integer, Marker> visibleMarkers = new HashMap<Integer, Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +72,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         ButterKnife.bind(MapActivity.this);
         initializeMap();
         initializeGoogleApiClient();
-        presenter.checkStopsUpdate();
     }
 
     @Override
@@ -101,6 +109,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         settings.setMyLocationButtonEnabled(false);
         this.map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), ZOOM_CITY));
+        presenter.checkStopsUpdate();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -115,6 +124,19 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
             }
         });
         snackbar.show();
+    }
+
+    @Override
+    public void placeMarkers(final List<Stop> stopList) {
+        if (map != null) {
+            map.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                @Override
+                public void onCameraMove() {
+                    addItemsToMap(stopList, map.getCameraPosition().zoom);
+                }
+            });
+
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -218,5 +240,31 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     private void showLocationSettings() {
         final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
+    }
+
+    private void addItemsToMap(List<Stop> stopList, float zoom) {
+        LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
+        for (Stop stop : stopList) {
+            LatLng latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
+            if (zoom >= ZOOM_STREET) {
+                if (latLngBounds.contains(latLng)) {
+                    if (!visibleMarkers.containsKey(stop.getId())) {
+                        Marker marker = map.addMarker(
+                                new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker()));
+                        visibleMarkers.put(stop.getId(), marker);
+                    }
+                } else {
+                    if (visibleMarkers.containsKey(stop.getId())) {
+                        visibleMarkers.get(stop.getId()).remove();
+                        visibleMarkers.remove(stop.getId());
+                    }
+                }
+            } else {
+                if (visibleMarkers.containsKey(stop.getId())) {
+                    visibleMarkers.get(stop.getId()).remove();
+                    visibleMarkers.remove(stop.getId());
+                }
+            }
+        }
     }
 }

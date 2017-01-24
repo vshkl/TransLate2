@@ -2,18 +2,19 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
     <fragment
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/fr_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        map:mapType="normal"
         tools:context=".ui.activity.MapActivity"
         />
 
@@ -23,10 +24,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="8dp"
-        app:srcCompat="@drawable/ic_location_my"
         app:fabSize="normal"
         app:layout_anchor="@id/fr_map"
         app:layout_anchorGravity="bottom|center"
+        app:srcCompat="@drawable/ic_location_my"
         />
 
 </android.support.design.widget.CoordinatorLayout>

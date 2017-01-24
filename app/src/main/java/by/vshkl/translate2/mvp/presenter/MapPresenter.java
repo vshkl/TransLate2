@@ -42,6 +42,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                             getViewState().showUpdateStopsSnackbar();
                         } else {
                             getAllStopsFromLocalDatabase();
+                            placeMarkers();
                         }
                     }
                 });
@@ -55,6 +56,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     @Override
                     public void accept(List<StopEntity> stopEntities) throws Exception {
                         stopList = StopTransformer.transform(stopEntities);
+                        placeMarkers();
                     }
                 });
     }
@@ -90,5 +92,11 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     }
                 });
 
+    }
+
+    public void placeMarkers() {
+        if (stopList != null) {
+            getViewState().placeMarkers(stopList);
+        }
     }
 }
