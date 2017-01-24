@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -95,7 +97,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     @OnShowRationale({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void showRationaleForLocation(final PermissionRequest request) {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(MapActivity.this)
                 .setTitle(R.string.map_permission_rationale_title)
                 .setMessage(R.string.map_permission_rationale_message)
                 .setPositiveButton(R.string.map_permission_rationale_allow, new DialogInterface.OnClickListener() {
@@ -115,26 +117,36 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
-        final Snackbar snackbar = Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.map_permission_denied_settings, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        snackbar.show();
+        Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
+                .setAction(R.string.map_permission_denied_settings, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAppSettings();
+                    }
+                })
+                .show();
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
     public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, MapActivity.class);
+        final Intent intent = new Intent(context, MapActivity.class);
         return intent;
     }
 
     private void initializeMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.fr_map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fr_map);
         mapFragment.getMapAsync(MapActivity.this);
+    }
+
+    private void showAppSettings() {
+        final Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse("package:" + getApplicationContext().getPackageName()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        startActivity(intent);
     }
 }
