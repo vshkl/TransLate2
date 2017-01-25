@@ -1,14 +1,15 @@
 package by.vshkl.translate2.ui.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -50,7 +51,6 @@ import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
 import by.vshkl.translate2.util.CookieUtils;
 import by.vshkl.translate2.util.DialogUtils;
-import by.vshkl.translate2.util.DimensionUtils;
 import by.vshkl.translate2.util.Navigation;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -59,7 +59,8 @@ import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapReadyCallback {
+public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_STREET = 15F;
@@ -76,7 +77,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
-    private HashMap<Integer, Marker> visibleMarkers = new HashMap<>();
+    private HashMap<Integer, Marker> visibleMarkers;
     private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
@@ -84,21 +85,22 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(MapActivity.this);
+        visibleMarkers = new HashMap<>();
         initializeMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
     }
 
     @Override
-    protected void onStart() {
+    protected void onResume() {
+        super.onResume();
         googleApiClient.connect();
-        super.onStart();
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         googleApiClient.disconnect();
-        super.onStop();
+        super.onPause();
     }
 
     @Override
@@ -114,55 +116,55 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         MapActivityPermissionsDispatcher.updateCoordinatesWithCheck(MapActivity.this);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        somethingWithMap();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setBuildingsEnabled(true);
-        UiSettings settings = map.getUiSettings();
-        settings.setCompassEnabled(false);
-        settings.setMyLocationButtonEnabled(false);
-        settings.setMapToolbarEnabled(false);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), ZOOM_CITY));
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (bottomSheetBehavior != null) {
-                    bottomSheetBehavior.setPeekHeight(0);
-                    showFab();
-                }
-            }
-        });
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                if (visibleMarkers.containsValue(marker)) {
-                    for (Map.Entry<Integer, Marker> entry : visibleMarkers.entrySet()) {
-                        if (Objects.equals(marker, entry.getValue())) {
-                            presenter.getStopById(entry.getKey());
-                        }
-                    }
-                }
-                return false;
-            }
-        });
+        setupMap();
         presenter.checkStopsUpdate();
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if (bottomSheetBehavior != null) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            showFab();
+        }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if (visibleMarkers.containsValue(marker)) {
+            for (Map.Entry<Integer, Marker> entry : visibleMarkers.entrySet()) {
+                if (Objects.equals(marker, entry.getValue())) {
+                    presenter.getStopById(entry.getKey());
+                }
+            }
+        }
+        return false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
     @Override
     public void showUpdateStopsSnackbar() {
-        final Snackbar snackbar = Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction(R.string.map_update_stops_update, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.getAppStopsFromRemoteDatabase();
-            }
-        });
-        snackbar.show();
+        Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.map_update_stops_update, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        presenter.getAppStopsFromRemoteDatabase();
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -174,7 +176,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
                     addItemsToMap(stopList, map.getCameraPosition().zoom);
                 }
             });
-
         }
     }
 
@@ -190,36 +191,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     @Override
     public void showSelectedStop(final Stop stop) {
-        bottomSheetBehavior.setPeekHeight(DimensionUtils.dp2px(getResources().getDisplayMetrics(), 56));
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         tvStopName.setText(stop.getName());
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    String url = URL_DASHBOARD + stop.getId();
-                    CookieManager.getInstance().setCookie(url, CookieUtils.getCookies(getApplicationContext()));
-                    wvDashboard.clearHistory();
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        wvDashboard.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-                    } else {
-                        wvDashboard.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-                    }
-                    wvDashboard.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
-                    wvDashboard.getSettings().setAppCacheEnabled(true);
-                    wvDashboard.getSettings().setDomStorageEnabled(true);
-                    wvDashboard.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-                    wvDashboard.getSettings().setJavaScriptEnabled(true);
-                    wvDashboard.getSettings().setGeolocationEnabled(true);
-                    wvDashboard.loadUrl(url);
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
+        loadWebView(URL_DASHBOARD + stop.getId());
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -227,22 +201,10 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void updateCoordinates() {
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        boolean networkProviderEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        boolean gpsProviderEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (networkProviderEnabled || gpsProviderEnabled) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            if (location != null) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                map.setMyLocationEnabled(true);
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_STREET));
-            }
+        boolean hasProvider = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                || lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (hasProvider) {
+            somethingWithMap();
         } else {
             DialogUtils.showLocationTurnOnDialog(getApplicationContext());
         }
@@ -258,7 +220,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.map_permission_denied_settings, new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View view) {
                         Navigation.navigateToAppSettings(getApplicationContext());
                     }
                 })
@@ -268,8 +230,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     //------------------------------------------------------------------------------------------------------------------
 
     public static Intent newIntent(Context context) {
-        final Intent intent = new Intent(context, MapActivity.class);
-        return intent;
+        return new Intent(context, MapActivity.class);
     }
 
     private void initializeMap() {
@@ -279,17 +240,58 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
 
     private void initializeGoogleApiClient() {
         if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(MapActivity.this).addApi(LocationServices.API).build();
+            googleApiClient = new GoogleApiClient.Builder(MapActivity.this)
+                    .addConnectionCallbacks(this)
+                    .addApi(LocationServices.API).build();
         }
     }
 
     private void initializeBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(flBottomSheet);
-        bottomSheetBehavior.setPeekHeight(0);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
-    private void addItemsToMap(List<Stop> stopList, float zoom) {
+    private void setupMap() {
+        UiSettings settings = map.getUiSettings();
+        settings.setCompassEnabled(false);
+        settings.setMyLocationButtonEnabled(false);
+        settings.setMapToolbarEnabled(false);
+        map.setBuildingsEnabled(true);
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), ZOOM_CITY));
+        map.setOnMapClickListener(this);
+        map.setOnMarkerClickListener(this);
+    }
+
+    private void somethingWithMap() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        if (location != null) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            map.setMyLocationEnabled(true);
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_STREET));
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private void loadWebView(final String url) {
+        CookieManager.getInstance().setCookie(url, CookieUtils.getCookies(getApplicationContext()));
+        WebSettings settings = wvDashboard.getSettings();
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setAppCacheEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        settings.setJavaScriptEnabled(true);
+        wvDashboard.setClickable(false);
+        wvDashboard.clearHistory();
+        wvDashboard.loadUrl(url);
+    }
+
+    private void addItemsToMap(final List<Stop> stopList, float zoom) {
         LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
         for (Stop stop : stopList) {
             LatLng latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
