@@ -2,18 +2,15 @@ package by.vshkl.translate2.ui.activity;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
@@ -41,6 +38,7 @@ import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
+import by.vshkl.translate2.util.DialogUtils;
 import by.vshkl.translate2.util.Navigation;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -148,7 +146,10 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         boolean gpsProviderEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if (networkProviderEnabled || gpsProviderEnabled) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
@@ -158,42 +159,14 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_STREET));
             }
         } else {
-            new AlertDialog.Builder(MapActivity.this)
-                    .setMessage(R.string.map_location_message)
-                    .setPositiveButton(R.string.map_location_ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Navigation.navigateToLocationSettings(getApplicationContext());
-                        }
-                    })
-                    .setNegativeButton(R.string.map_location_cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    })
-                    .show();
+            DialogUtils.showLocationTurnOnDialog(getApplicationContext());
         }
 
     }
 
     @OnShowRationale({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void showRationaleForLocation(final PermissionRequest request) {
-        new AlertDialog.Builder(MapActivity.this)
-                .setTitle(R.string.map_permission_rationale_title)
-                .setMessage(R.string.map_permission_rationale_message)
-                .setPositiveButton(R.string.map_permission_rationale_allow, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.proceed();
-                    }
-                })
-                .setNegativeButton(R.string.map_permission_rationale_deny, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.cancel();
-                    }
-                })
-                .show();
+        DialogUtils.showLocationRationaleDialog(getApplicationContext(), request);
     }
 
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
@@ -224,11 +197,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(MapActivity.this).addApi(LocationServices.API).build();
         }
-    }
-
-    private void showLocationSettings() {
-        final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(intent);
     }
 
     private void addItemsToMap(List<Stop> stopList, float zoom) {
