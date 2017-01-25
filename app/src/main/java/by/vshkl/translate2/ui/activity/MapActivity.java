@@ -46,8 +46,6 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
-;
-
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapReadyCallback {
 
@@ -61,7 +59,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
-    private HashMap<Integer, Marker> visibleMarkers = new HashMap<Integer, Marker>();
+    private HashMap<Integer, Marker> visibleMarkers = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,7 +215,10 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
                     }
                 }
             } else {
-                map.clear();
+                if (visibleMarkers.containsKey(stop.getId())) {
+                    visibleMarkers.get(stop.getId()).remove();
+                    visibleMarkers.remove(stop.getId());
+                }
             }
         }
     }
