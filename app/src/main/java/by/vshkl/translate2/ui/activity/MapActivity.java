@@ -85,7 +85,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(MapActivity.this);
-        visibleMarkers = new HashMap<>();
         initializeMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
@@ -167,9 +166,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
                 .show();
     }
 
+    @SuppressLint("UseSparseArrays")
     @Override
     public void placeMarkers(final List<Stop> stopList) {
         if (map != null) {
+            visibleMarkers = new HashMap<>();
             map.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
                 @Override
                 public void onCameraMove() {
