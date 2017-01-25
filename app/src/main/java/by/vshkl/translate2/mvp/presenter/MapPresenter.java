@@ -99,4 +99,15 @@ public class MapPresenter extends MvpPresenter<MapView> {
             getViewState().placeMarkers(stopList);
         }
     }
+
+    public void getStopById(int stopId) {
+        if (stopList != null) {
+            for (Stop stop : stopList) {
+                if (stop.getId() == stopId) {
+                    getViewState().hideFab();
+                    getViewState().showSelectedStop(stop);
+                }
+            }
+        }
+    }
 }
