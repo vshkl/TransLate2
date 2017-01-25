@@ -27,39 +27,50 @@
         app:fabSize="normal"
         app:layout_anchor="@id/fr_map"
         app:layout_anchorGravity="bottom|center"
-        app:srcCompat="@drawable/ic_location_my"
+        app:srcCompat="@drawable/ic_location"
         />
 
-        <FrameLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fl_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground"
+        android:clipToPadding="true"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="56dp"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        >
+
+        <WebView
+            android:id="@+id/wv_dashboard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/fl_bottom_sheet"
+            android:layout_marginTop="-40dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_stop_name"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingStart="56dp"
+            android:paddingEnd="16dp"
             android:background="@color/colorBackground"
-            android:clipToPadding="true"
-            app:behavior_hideable="true"
-            app:behavior_peekHeight="56dp"
-            app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-            >
+            android:gravity="center_vertical"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="20sp"
+            android:elevation="4dp"
+            />
 
-            <WebView
-                android:id="@+id/wv_dashboard"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="-40dp"
-                />
+        <ImageView
+            android:id="@+id/iv_icon_stop"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:padding="16dp"
+            app:srcCompat="@drawable/ic_stop"
+            android:elevation="4dp"
+            />
 
-            <TextView
-                android:id="@+id/tv_stop_name"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@color/colorBackground"
-                android:padding="16dp"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp"
-                android:elevation="4dp"
-                />
-
-        </FrameLayout>
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>
