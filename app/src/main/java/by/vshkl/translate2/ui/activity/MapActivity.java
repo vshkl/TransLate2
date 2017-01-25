@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -42,6 +41,7 @@ import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
+import by.vshkl.translate2.util.Navigation;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
@@ -163,7 +163,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
                     .setPositiveButton(R.string.map_location_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            showLocationSettings();
+                            Navigation.navigateToLocationSettings(getApplicationContext());
                         }
                     })
                     .setNegativeButton(R.string.map_location_cancel, new DialogInterface.OnClickListener() {
@@ -202,7 +202,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
                 .setAction(R.string.map_permission_denied_settings, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showAppSettings();
+                        Navigation.navigateToAppSettings(getApplicationContext());
                     }
                 })
                 .show();
@@ -224,17 +224,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(MapActivity.this).addApi(LocationServices.API).build();
         }
-    }
-
-    private void showAppSettings() {
-        final Intent intent = new Intent();
-        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.setData(Uri.parse("package:" + getApplicationContext().getPackageName()));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        startActivity(intent);
     }
 
     private void showLocationSettings() {
@@ -260,10 +249,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, OnMapR
                     }
                 }
             } else {
-                if (visibleMarkers.containsKey(stop.getId())) {
-                    visibleMarkers.get(stop.getId()).remove();
-                    visibleMarkers.remove(stop.getId());
-                }
+                map.clear();
             }
         }
     }
