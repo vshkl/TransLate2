@@ -66,7 +66,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         OnMapClickListener, OnMarkerClickListener {
 
     private static final float ZOOM_CITY = 11F;
-    private static final float ZOOM_STREET = 15F;
+    private static final float ZOOM_OVERVIEW = 15F;
+    private static final float ZOOM_POSITION = 16F;
     private static final double DEFAULT_LATITUDE = 53.9024429;
     private static final double DEFAULT_LONGITUDE = 27.5614649;
     private static final String URL_DASHBOARD = "http://www.minsktrans.by/lookout_yard/Home/Index/minsk?stopsearch&s=";
@@ -277,7 +278,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_STREET));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_POSITION));
         }
     }
 
@@ -299,7 +300,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
         for (Stop stop : stopList) {
             LatLng latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
-            if (zoom >= ZOOM_STREET) {
+            if (zoom >= ZOOM_OVERVIEW) {
                 if (latLngBounds.contains(latLng)) {
                     if (!visibleMarkers.containsKey(stop.getId())) {
                         Marker marker = map.addMarker(new MarkerOptions()
