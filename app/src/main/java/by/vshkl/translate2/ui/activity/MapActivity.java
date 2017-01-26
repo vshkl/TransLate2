@@ -210,13 +210,13 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (hasProvider) {
             somethingWithMap();
         } else {
-            DialogUtils.showLocationTurnOnDialog(getApplicationContext());
+            DialogUtils.showLocationTurnOnDialog(this);
         }
     }
 
     @OnShowRationale({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void showRationaleForLocation(final PermissionRequest request) {
-        DialogUtils.showLocationRationaleDialog(getApplicationContext(), request);
+        DialogUtils.showLocationRationaleDialog(this, request);
     }
 
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})

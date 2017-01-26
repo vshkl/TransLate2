@@ -25,7 +25,9 @@
             android:name="AA_DB_VERSION"
             android:value="1"/>
 
-        <activity android:name="by.vshkl.translate2.ui.activity.SplashScreenActivity">
+        <activity
+            android:name="by.vshkl.translate2.ui.activity.SplashScreenActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -33,10 +35,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="by.vshkl.translate2.ui.activity.LoginActivity"/>
+            android:name="by.vshkl.translate2.ui.activity.LoginActivity"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name="by.vshkl.translate2.ui.activity.MapActivity"
-            android:hardwareAccelerated="true"/>
+            android:hardwareAccelerated="true"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>
