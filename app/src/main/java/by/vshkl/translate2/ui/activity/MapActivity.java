@@ -221,7 +221,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (hasProvider) {
             showUserLocation();
         } else {
-            DialogUtils.showLocationTurnOnDialog(this);
+            DialogUtils.showLocationTurnOnDialog(MapActivity.this);
         }
     }
 
@@ -236,7 +236,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 .setAction(R.string.map_permission_denied_settings, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Navigation.navigateToAppSettings(getApplicationContext());
+                        Navigation.navigateToAppSettings(MapActivity.this);
                     }
                 })
                 .show();
