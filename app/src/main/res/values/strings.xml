@@ -4,14 +4,7 @@
     <!-- Preferences -->
 
     <string name="pref_key_cookies" translatable="false">pref_key_cookies</string>
-    
-    <!-- Login screen -->
 
-    <string name="login_hint_email">Email</string>
-    <string name="login_hint_password">Password</string>
-    <string name="login_hint_captcha">Captcha</string>
-    <string name="login_button_login">Login</string>
-    
     <!-- Map screen -->
 
     <string name="map_update_stops_message">Stops need to be updated.</string>
@@ -25,9 +18,8 @@
     <string name="map_permission_denied_settings">SETTINGS</string>
 
     <string name="map_location_message">To continue, turn on location.</string>
-    <string name="map_location_ok">OK</string>
-    <string name="map_location_cancel">CANCEL</string>
+    <string name="map_location_ok">@android:string/ok</string>
+    <string name="map_location_cancel">@android:string/cancel</string>
 
 
-    
 </resources>

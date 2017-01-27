@@ -40,8 +40,7 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
     //------------------------------------------------------------------------------------------------------------------
 
     public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, LoginActivity.class);
-        return intent;
+        return new Intent(context, LoginActivity.class);
     }
 
     private void initializeWebView() {

@@ -94,7 +94,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     }
 
-    public void placeMarkers() {
+    private void placeMarkers() {
         if (stopList != null) {
             getViewState().placeMarkers(stopList);
         }
