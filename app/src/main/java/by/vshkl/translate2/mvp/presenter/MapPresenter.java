@@ -5,6 +5,7 @@ import com.arellomobile.mvp.MvpPresenter;
 
 import java.util.List;
 
+import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.DbUtils;
 import by.vshkl.translate2.database.local.entity.StopEntity;
 import by.vshkl.translate2.database.remote.FirebaseUtils;
@@ -89,6 +90,8 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     public void accept(List<Stop> stops) throws Exception {
                         stopList = stops;
                         saveAllStopsToLocalDatabase();
+                        getViewState().showMessage(R.string.map_message_stops_updated);
+                        getViewState().initializeMap();
                     }
                 });
 

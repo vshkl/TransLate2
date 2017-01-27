@@ -10,6 +10,10 @@ public interface MapView extends MvpView {
 
     void showUpdateStopsSnackbar();
 
+    void initializeMap();
+
+    void showMessage(int messageId);
+
     void placeMarkers(List<Stop> stopList);
 
     void showFab();

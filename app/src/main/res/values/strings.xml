@@ -21,5 +21,7 @@
     <string name="map_location_ok">@android:string/ok</string>
     <string name="map_location_cancel">@android:string/cancel</string>
 
+    <string name="map_message_stops_updated">Stops are up to date.</string>
+
 
 </resources>

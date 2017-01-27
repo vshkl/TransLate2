@@ -89,7 +89,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(MapActivity.this);
-        initializeMap();
+        initializeGoogleMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
     }
@@ -121,7 +121,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        somethingWithMap();
+        showUserLocation();
     }
 
     @Override
@@ -170,6 +170,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 .show();
     }
 
+    @Override
+    public void initializeMap() {
+        initializeGoogleMap();
+    }
+
+    @Override
+    public void showMessage(int messageId) {
+        Snackbar.make(clRoot, messageId, Snackbar.LENGTH_SHORT).show();
+    }
+
     @SuppressLint("UseSparseArrays")
     @Override
     public void placeMarkers(final List<Stop> stopList) {
@@ -209,7 +219,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         boolean hasProvider = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 || lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (hasProvider) {
-            somethingWithMap();
+            showUserLocation();
         } else {
             DialogUtils.showLocationTurnOnDialog(this);
         }
@@ -238,7 +248,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         return new Intent(context, MapActivity.class);
     }
 
-    private void initializeMap() {
+    private void initializeGoogleMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fr_map);
         mapFragment.getMapAsync(MapActivity.this);
     }
@@ -267,7 +277,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         map.setOnMarkerClickListener(this);
     }
 
-    private void somethingWithMap() {
+    private void showUserLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
