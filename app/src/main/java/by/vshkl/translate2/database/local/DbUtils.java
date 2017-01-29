@@ -34,7 +34,7 @@ public class DbUtils {
                 List<StopEntity> stopEntityList = new Select()
                         .from(StopEntity.class)
                         .execute();
-                emitter.onNext(stopEntityList != null ? stopEntityList : Collections.<StopEntity>emptyList());
+                emitter.onNext(stopEntityList != null ? stopEntityList : Collections.emptyList());
             }
         });
     }

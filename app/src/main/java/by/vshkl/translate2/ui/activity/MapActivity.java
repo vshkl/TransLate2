@@ -161,12 +161,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void showUpdateStopsSnackbar() {
         Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.map_update_stops_update, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        presenter.getAppStopsFromRemoteDatabase();
-                    }
-                })
+                .setAction(R.string.map_update_stops_update, view -> presenter.getAppStopsFromRemoteDatabase())
                 .show();
     }
 
@@ -185,12 +180,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public void placeMarkers(final List<Stop> stopList) {
         if (map != null) {
             visibleMarkers = new HashMap<>();
-            map.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-                @Override
-                public void onCameraMove() {
-                    addItemsToMap(stopList, map.getCameraPosition().zoom);
-                }
-            });
+            map.setOnCameraMoveListener(() -> addItemsToMap(stopList, map.getCameraPosition().zoom));
         }
     }
 
@@ -233,12 +223,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
         Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
-                .setAction(R.string.map_permission_denied_settings, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Navigation.navigateToAppSettings(MapActivity.this);
-                    }
-                })
+                .setAction(R.string.map_permission_denied_settings, view -> Navigation.navigateToAppSettings(MapActivity.this))
                 .show();
     }
 
