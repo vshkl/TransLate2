@@ -27,7 +27,7 @@
 
         <activity
             android:name="by.vshkl.translate2.ui.activity.SplashScreenActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
