@@ -28,13 +28,13 @@ public class SplashScreenActivity extends MvpAppCompatActivity implements Splash
 
     @Override
     public void onLoggedIn() {
-        Navigation.navigateToMap(SplashScreenActivity.this);
+        Navigation.navigateToMap(this);
         finish();
     }
 
     @Override
     public void onNotLoggedIn() {
-        Navigation.navigateToLogin(SplashScreenActivity.this);
+        Navigation.navigateToLogin(this);
         finish();
     }
 }

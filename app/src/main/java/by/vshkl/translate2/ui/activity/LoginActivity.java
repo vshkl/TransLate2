@@ -34,7 +34,7 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.bind(LoginActivity.this);
+        ButterKnife.bind(this);
         initializeWebView();
     }
 

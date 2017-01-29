@@ -15,7 +15,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -89,7 +88,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        ButterKnife.bind(MapActivity.this);
+        ButterKnife.bind(this);
         initializeGoogleMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
@@ -116,14 +115,14 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        MapActivityPermissionsDispatcher.onRequestPermissionsResult(MapActivity.this, requestCode, grantResults);
+        MapActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
     @OnClick(R.id.fb_location)
     void onLocationClicked() {
-        MapActivityPermissionsDispatcher.updateCoordinatesWithCheck(MapActivity.this);
+        MapActivityPermissionsDispatcher.updateCoordinatesWithCheck(this);
     }
 
     @Override
@@ -193,12 +192,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void showFab() {
-        fabLocation.setVisibility(View.VISIBLE);
+        fabLocation.show();
     }
 
     @Override
     public void hideFab() {
-        fabLocation.setVisibility(View.GONE);
+        fabLocation.hide();
     }
 
     @Override
@@ -218,7 +217,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (hasProvider) {
             showUserLocation();
         } else {
-            DialogUtils.showLocationTurnOnDialog(MapActivity.this);
+            DialogUtils.showLocationTurnOnDialog(this);
         }
     }
 
@@ -230,7 +229,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
         Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
-                .setAction(R.string.map_permission_denied_settings, view -> Navigation.navigateToAppSettings(MapActivity.this))
+                .setAction(R.string.map_permission_denied_settings, view -> Navigation.navigateToAppSettings(this))
                 .show();
     }
 
@@ -242,12 +241,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     private void initializeGoogleMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fr_map);
-        mapFragment.getMapAsync(MapActivity.this);
+        mapFragment.getMapAsync(this);
     }
 
     private void initializeGoogleApiClient() {
         if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(MapActivity.this)
+            googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addApi(LocationServices.API).build();
         }
