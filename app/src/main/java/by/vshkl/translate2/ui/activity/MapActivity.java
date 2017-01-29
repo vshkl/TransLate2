@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -146,7 +147,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public void onMapClick(LatLng latLng) {
         if (bottomSheetBehavior != null) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            showFab();
+            fabLocation.show();
         }
     }
 
@@ -191,20 +192,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void showFab() {
-        fabLocation.show();
-    }
-
-    @Override
-    public void hideFab() {
-        fabLocation.hide();
-    }
-
-    @Override
     public void showSelectedStop(final Stop stop) {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         tvStopName.setText(stop.getName());
         loadWebView(URL_DASHBOARD + stop.getId());
+        fabLocation.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+            @Override
+            public void onHidden(FloatingActionButton fab) {
+                super.onHidden(fab);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -255,6 +252,19 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private void initializeBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(flBottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        initalizeWebView();
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private void initalizeWebView() {
+        WebSettings settings = wvDashboard.getSettings();
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setAppCacheEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        settings.setJavaScriptEnabled(true);
+        wvDashboard.setClickable(false);
+        wvDashboard.setWebViewClient(new WebViewClient());
     }
 
     private void setupMap() {
@@ -283,16 +293,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     private void loadWebView(final String url) {
-        CookieManager.getInstance().setCookie(url, CookieUtils.getCookies(getApplicationContext()));
-        WebSettings settings = wvDashboard.getSettings();
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setAppCacheEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        settings.setJavaScriptEnabled(true);
-        wvDashboard.setClickable(false);
+        CookieManager.getInstance().setCookie("", CookieUtils.getCookies(getApplicationContext()));
         wvDashboard.clearHistory();
         wvDashboard.loadUrl(url);
     }

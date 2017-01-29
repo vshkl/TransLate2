@@ -16,9 +16,5 @@ public interface MapView extends MvpView {
 
     void placeMarkers(List<Stop> stopList);
 
-    void showFab();
-
-    void hideFab();
-
     void showSelectedStop(Stop stop);
 }
