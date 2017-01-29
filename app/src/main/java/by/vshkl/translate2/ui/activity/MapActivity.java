@@ -48,6 +48,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import by.vshkl.translate2.App;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
@@ -104,6 +105,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     protected void onPause() {
         googleApiClient.disconnect();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.getRefWatcher(this).watch(this);
     }
 
     @Override

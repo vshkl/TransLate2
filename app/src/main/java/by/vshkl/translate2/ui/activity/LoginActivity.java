@@ -16,6 +16,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import by.vshkl.translate2.App;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.presenter.LoginPresenter;
 import by.vshkl.translate2.mvp.view.LoginView;
@@ -35,6 +36,12 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(LoginActivity.this);
         initializeWebView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.getRefWatcher(this).watch(this);
     }
 
     //------------------------------------------------------------------------------------------------------------------

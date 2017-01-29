@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import by.vshkl.translate2.App;
 import by.vshkl.translate2.mvp.presenter.SplashScreenPresenter;
 import by.vshkl.translate2.mvp.view.SplashScreenView;
 import by.vshkl.translate2.util.Navigation;
@@ -17,6 +18,12 @@ public class SplashScreenActivity extends MvpAppCompatActivity implements Splash
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter.checkLoggedIn(getApplicationContext());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.getRefWatcher(this).watch(this);
     }
 
     @Override
