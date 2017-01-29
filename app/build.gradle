@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
-        versionName "0.1.2"
+        versionName "0.1.3"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "ENCRYPTED_PREFERENCES_PWD", ENCRYPTED_PREFERENCES_PWD)
@@ -19,16 +19,14 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
+            zipAlignEnabled true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            zipAlignEnabled true
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '-DEBUG'
             debuggable true
-            zipAlignEnabled false
         }
     }
     compileOptions {
