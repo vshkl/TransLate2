@@ -252,18 +252,18 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private void initializeBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(flBottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        initalizeWebView();
+        initializeWebView();
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private void initalizeWebView() {
+    private void initializeWebView() {
         WebSettings settings = wvDashboard.getSettings();
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setAppCacheEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         settings.setJavaScriptEnabled(true);
-        wvDashboard.setClickable(false);
+        wvDashboard.setOnTouchListener((v, event) -> true);
         wvDashboard.setWebViewClient(new WebViewClient());
     }
 

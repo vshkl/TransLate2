@@ -88,7 +88,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
         if (stopList != null) {
             for (Stop stop : stopList) {
                 if (stop.getId() == stopId) {
-                    getViewState().hideFab();
                     getViewState().showSelectedStop(stop);
                 }
             }
