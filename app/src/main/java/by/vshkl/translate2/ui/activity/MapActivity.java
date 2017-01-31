@@ -15,11 +15,13 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
@@ -78,6 +80,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @BindView(R.id.fb_location) FloatingActionButton fabLocation;
     @BindView(R.id.tv_stop_name) TextView tvStopName;
     @BindView(R.id.wv_dashboard) WebView wvDashboard;
+    @BindView(R.id.pb_loading) ProgressBar pbLoading;
 
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
@@ -140,7 +143,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         setupMap();
-        presenter.checkStopsUpdate();
+        presenter.getUpdatedTimestampFromRemoteDatabase();
+        presenter.getAllStopsFromLocalDatabase();
     }
 
     @Override
@@ -168,7 +172,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void showUpdateStopsSnackbar() {
         Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.map_update_stops_update, view -> presenter.getAppStopsFromRemoteDatabase())
+                .setAction(R.string.map_update_stops_update, view -> presenter.getAllStopsFromRemoteDatabase())
                 .show();
     }
 
@@ -202,6 +206,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+    }
+
+    @Override
+    public void showProgressBar() {
+        pbLoading.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        pbLoading.setVisibility(View.GONE);
     }
 
     //------------------------------------------------------------------------------------------------------------------
