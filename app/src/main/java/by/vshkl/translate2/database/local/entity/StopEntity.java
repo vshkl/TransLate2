@@ -7,7 +7,7 @@ import com.activeandroid.annotation.Table;
 @Table(name = "Stops", id = "_id")
 public class StopEntity extends Model {
 
-    @Column(name = "Id")
+    @Column(name = "Id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public int id;
     @Column(name = "Name")
     public String name;

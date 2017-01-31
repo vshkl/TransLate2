@@ -20,6 +20,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     private Disposable disposable;
     private List<Stop> stopList;
+    private long updatedTimestamp;
 
     @Override
     public void onDestroy() {
@@ -29,21 +30,42 @@ public class MapPresenter extends MvpPresenter<MapView> {
         super.onDestroy();
     }
 
-    public void checkStopsUpdate() {
-        disposable = DbUtils.isStopsTableEmpty()
+    public void getUpdatedTimestampFromRemoteDatabase() {
+        disposable = FirebaseUtils.getUpdatedTimestamp()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(updated -> {
+                    updatedTimestamp = updated.getUpdatedTimestamp();
+                    isOutdatedOrNotExists(updatedTimestamp);
+                });
+    }
+
+    public void getAllStopsFromRemoteDatabase() {
+        getViewState().showProgressBar();
+        disposable = FirebaseUtils.getAllStops()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(stops -> {
+                    getViewState().hideProgressBar();
+                    stopList = stops;
+                    saveAllStopsToLocalDatabase();
+                    placeMarkers();
+                    getViewState().showMessage(R.string.map_message_stops_updated);
+                });
+    }
+
+    private void isOutdatedOrNotExists(final long updatedTimestamp) {
+        disposable = DbUtils.isOutdatedOrNotExists(updatedTimestamp)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
                     if (aBoolean) {
                         getViewState().showUpdateStopsSnackbar();
-                    } else {
-                        getAllStopsFromLocalDatabase();
-                        placeMarkers();
                     }
                 });
     }
 
-    private void getAllStopsFromLocalDatabase() {
+    public void getAllStopsFromLocalDatabase() {
         disposable = DbUtils.getAllStops()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -54,28 +76,11 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     private void saveAllStopsToLocalDatabase() {
-        disposable = DbUtils.saveAllStops(stopList)
+        disposable = DbUtils.saveAllStops(stopList, updatedTimestamp)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
                 });
-    }
-
-    public void getAppStopsFromRemoteDatabase() {
-        disposable = FirebaseUtils.getAllStops()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> {
-                    throwable.printStackTrace();
-                    return null;
-                })
-                .subscribe(stops -> {
-                    stopList = stops;
-                    saveAllStopsToLocalDatabase();
-                    getViewState().showMessage(R.string.map_message_stops_updated);
-                    getViewState().initializeMap();
-                });
-
     }
 
     private void placeMarkers() {
