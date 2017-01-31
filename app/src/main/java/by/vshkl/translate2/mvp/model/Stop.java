@@ -59,7 +59,6 @@ public class Stop {
         Stop stop = (Stop) o;
 
         return id == stop.id;
-
     }
 
     @Override
