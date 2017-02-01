@@ -123,6 +123,17 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         MapActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
+    @Override
+    public void onBackPressed() {
+        switch (bottomSheetBehavior.getState()) {
+            case BottomSheetBehavior.STATE_EXPANDED:
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                break;
+            default:
+                super.onBackPressed();
+        }
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     @OnClick(R.id.fb_location)
