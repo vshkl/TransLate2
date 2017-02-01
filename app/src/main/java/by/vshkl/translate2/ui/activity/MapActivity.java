@@ -355,7 +355,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     private void highlightSelectedMarker(Marker marker) {
         if (selectedMarker != null && !selectedMarker.equals(marker)) {
-            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+            if (visibleMarkers.containsValue(selectedMarker)) {
+                selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+            }
             selectedMarker = marker;
             selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
         } else {
@@ -365,7 +367,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     private void dropMarkerHighlight() {
-        if (selectedMarker != null) {
+        if (selectedMarker != null && visibleMarkers.containsValue(selectedMarker)) {
             selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
             selectedMarker = null;
         }
