@@ -1,6 +1,7 @@
 package by.vshkl.translate2.database.local;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
 import java.util.Collections;
@@ -39,6 +40,7 @@ public class DbUtils {
                 for (Stop stop : stopList) {
                     StopEntityTransformer.transform(stop).save();
                 }
+                new Delete().from(UpdatedEntity.class).execute();
                 UpdatedEntity updatedEntity = new UpdatedEntity();
                 updatedEntity.undatedTimestamp = updatedTimestamp;
                 updatedEntity.save();

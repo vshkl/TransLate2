@@ -89,7 +89,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
         }
     }
 
-    public void getStopById(int stopId) {
+    public void getStopById(final int stopId) {
         if (stopList != null) {
             for (Stop stop : stopList) {
                 if (stop.getId() == stopId) {
