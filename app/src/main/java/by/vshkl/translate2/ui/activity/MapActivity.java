@@ -87,6 +87,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private GoogleApiClient googleApiClient;
     private HashMap<Integer, Marker> visibleMarkers;
     private BottomSheetBehavior bottomSheetBehavior;
+    private Marker selectedMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +150,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onMapClick(LatLng latLng) {
+        dropMarkerHighlight();
         if (bottomSheetBehavior != null) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             fabLocation.show();
@@ -157,6 +159,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        highlightSelectedMarker(marker);
         if (visibleMarkers.containsValue(marker)) {
             for (Map.Entry<Integer, Marker> entry : visibleMarkers.entrySet()) {
                 if (Objects.equals(marker, entry.getValue())) {
@@ -336,6 +339,24 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                     visibleMarkers.remove(stop.getId());
                 }
             }
+        }
+    }
+
+    private void highlightSelectedMarker(Marker marker) {
+        if (selectedMarker != null && !selectedMarker.equals(marker)) {
+            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+            selectedMarker = marker;
+            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
+        } else {
+            selectedMarker = marker;
+            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
+        }
+    }
+
+    private void dropMarkerHighlight() {
+        if (selectedMarker != null) {
+            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+            selectedMarker = null;
         }
     }
 }
