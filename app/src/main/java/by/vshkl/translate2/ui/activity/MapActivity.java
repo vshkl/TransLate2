@@ -44,14 +44,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import by.vshkl.translate2.App;
 import by.vshkl.translate2.R;
+import by.vshkl.translate2.mvp.model.MarkerWrapper;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
@@ -85,9 +84,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
-    private HashMap<Integer, Marker> visibleMarkers;
+    private HashMap<Integer, MarkerWrapper> visibleMarkers;
     private BottomSheetBehavior bottomSheetBehavior;
-    private Marker selectedMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +159,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onMapClick(LatLng latLng) {
-        dropMarkerHighlight();
+        dropMarkerHighlight(map.getCameraPosition().zoom);
         if (bottomSheetBehavior != null) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             fabLocation.show();
@@ -170,11 +168,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        highlightSelectedMarker(marker);
-        if (visibleMarkers.containsValue(marker)) {
-            for (Map.Entry<Integer, Marker> entry : visibleMarkers.entrySet()) {
-                if (Objects.equals(marker, entry.getValue())) {
-                    presenter.getStopById(entry.getKey());
+        MarkerWrapper markerWrapper = new MarkerWrapper(marker);
+        if (visibleMarkers.containsValue(markerWrapper)) {
+            for (Integer key : visibleMarkers.keySet()) {
+                if (visibleMarkers.get(key).equals(markerWrapper)) {
+                    presenter.getStopById(key);
+                    highlightSelectedMarker(key);
                 }
             }
         }
@@ -285,7 +284,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     fabLocation.show();
-                    dropMarkerHighlight();
+                    dropMarkerHighlight(map.getCameraPosition().zoom);
                 }
             }
 
@@ -344,46 +343,48 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private void addItemsToMap(final List<Stop> stopList, float zoom) {
         LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
         for (Stop stop : stopList) {
+            int stopId = stop.getId();
             LatLng latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
             if (zoom >= ZOOM_OVERVIEW) {
                 if (latLngBounds.contains(latLng)) {
-                    if (!visibleMarkers.containsKey(stop.getId())) {
-                        Marker marker = map.addMarker(new MarkerOptions()
-                                .position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place)));
-                        visibleMarkers.put(stop.getId(), marker);
+                    if (!visibleMarkers.containsKey(stopId)) {
+                        MarkerWrapper marker = new MarkerWrapper(map.addMarker(new MarkerOptions()
+                                .position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place))));
+                        visibleMarkers.put(stopId, marker);
                     }
-                } else {
-                    if (visibleMarkers.containsKey(stop.getId())) {
-                        visibleMarkers.get(stop.getId()).remove();
-                        visibleMarkers.remove(stop.getId());
-                    }
+                } else if (visibleMarkers.containsKey(stopId) && !visibleMarkers.get(stopId).isSelected()) {
+                    visibleMarkers.get(stopId).getMarker().remove();
+                    visibleMarkers.remove(stopId);
                 }
-            } else {
-                if (visibleMarkers.containsKey(stop.getId())) {
-                    visibleMarkers.get(stop.getId()).remove();
-                    visibleMarkers.remove(stop.getId());
-                }
+            } else if (visibleMarkers.containsKey(stopId) && !visibleMarkers.get(stopId).isSelected()) {
+                visibleMarkers.get(stopId).getMarker().remove();
+                visibleMarkers.remove(stopId);
             }
         }
     }
 
-    private void highlightSelectedMarker(Marker marker) {
-        if (selectedMarker != null && !selectedMarker.equals(marker)) {
-            if (visibleMarkers.containsValue(selectedMarker)) {
-                selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
-            }
-            selectedMarker = marker;
-            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
-        } else {
-            selectedMarker = marker;
-            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
+    private void highlightSelectedMarker(Integer key) {
+        float zoom = map.getCameraPosition().zoom;
+        if (zoom < ZOOM_OVERVIEW) {
+            return;
         }
+        dropMarkerHighlight(zoom);
+        visibleMarkers.get(key).setSelected(true);
+        visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
     }
 
-    private void dropMarkerHighlight() {
-        if (selectedMarker != null && visibleMarkers.containsValue(selectedMarker)) {
-            selectedMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
-            selectedMarker = null;
+    private void dropMarkerHighlight(float zoom) {
+        if (zoom < ZOOM_OVERVIEW) {
+            for (Integer key : visibleMarkers.keySet()) {
+                visibleMarkers.get(key).getMarker().remove();
+                visibleMarkers.remove(key);
+            }
+        }
+        for (Integer key : visibleMarkers.keySet()) {
+            if (visibleMarkers.get(key).isSelected()) {
+                visibleMarkers.get(key).setSelected(false);
+                visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+            }
         }
     }
 }
