@@ -280,6 +280,20 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private void initializeBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(flBottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    fabLocation.show();
+                    dropMarkerHighlight();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
         initializeWebView();
     }
 
