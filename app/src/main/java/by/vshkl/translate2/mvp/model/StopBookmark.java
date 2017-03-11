@@ -1,0 +1,55 @@
+package by.vshkl.translate2.mvp.model;
+
+/**
+ * Created by jgug on 11.3.17.
+ */
+
+public class StopBookmark {
+
+    private int id;
+    private String name;
+
+    public StopBookmark() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StopBookmark that = (StopBookmark) o;
+
+        return id == that.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("StopBookmark{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+}
