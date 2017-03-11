@@ -43,9 +43,7 @@ public class DbUtils {
         return Observable.create(emitter -> {
             ActiveAndroid.beginTransaction();
             try {
-                for (Stop stop : stopList) {
-                    StopEntityTransformer.transform(stop).save();
-                }
+                stopList.forEach(stop -> StopEntityTransformer.transform(stop).save());
                 new Delete().from(UpdatedEntity.class).execute();
                 UpdatedEntity updatedEntity = new UpdatedEntity();
                 updatedEntity.undatedTimestamp = updatedTimestamp;
@@ -55,21 +53,6 @@ public class DbUtils {
                 ActiveAndroid.endTransaction();
                 emitter.onNext(true);
             }
-        });
-    }
-
-    public static Observable<List<StopEntity>> getStopsWithSearchQuery(String searchQuery) {
-        return Observable.create(emitter -> {
-            List<StopEntity> stopEntityList = new Select()
-                    .from(StopEntity.class)
-                    .where("Name LIKE ?", new String[]{'%' + searchQuery + '%'})
-                    .orderBy("Name ASC")
-                    .execute();
-            Map<String, StopEntity> entityMap = new HashMap<>();
-            for (StopEntity stopEntity :  stopEntityList) {
-                entityMap.put(stopEntity.name, stopEntity);
-            }
-            emitter.onNext(entityMap != null ? new ArrayList<>(entityMap.values()) : Collections.emptyList());
         });
     }
 }
