@@ -28,9 +28,9 @@ import android.widget.TextView;
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.FloatingSearchView.OnFocusChangeListener;
 import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener;
 import com.arlib.floatingsearchview.FloatingSearchView.OnSearchListener;
-import com.arlib.floatingsearchview.FloatingSearchView.OnFocusChangeListener;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter.OnBindSuggestionCallback;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -95,6 +95,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private GoogleApiClient googleApiClient;
     private HashMap<Integer, MarkerWrapper> visibleMarkers;
     private BottomSheetBehavior bottomSheetBehavior;
+    private boolean firstConnect = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +152,10 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        showUserLocation();
+        if (firstConnect) {
+            firstConnect = false;
+            showUserLocation();
+        }
     }
 
     @Override
