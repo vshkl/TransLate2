@@ -77,8 +77,9 @@
                 android:layout_height="56dp"
                 android:background="@color/colorBackground"
                 android:gravity="center_vertical"
-                android:paddingEnd="16dp"
+                android:paddingEnd="56dp"
                 android:paddingStart="56dp"
+                android:layout_gravity="start"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="20sp"
                 />
@@ -88,6 +89,16 @@
                 android:layout_height="56dp"
                 android:padding="16dp"
                 app:srcCompat="@drawable/ic_stop"
+                tools:ignore="ContentDescription"
+                />
+
+            <ImageView
+                android:id="@+id/iv_bookmark"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:padding="16dp"
+                android:layout_gravity="end"
+                app:srcCompat="@drawable/ic_bookmark"
                 tools:ignore="ContentDescription"
                 />
 
