@@ -17,6 +17,4 @@ public class StopEntity extends Model {
     public float longitude;
     @Column(name = "Bearing")
     public int bearing;
-    @Column(name = "Bookmark")
-    public boolean bookmark = false;
 }

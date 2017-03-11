@@ -15,13 +15,14 @@ public class StopEntityTransformer {
         stopEntity.latitude = stop.getLatitude();
         stopEntity.longitude = stop.getLongitude();
         stopEntity.bearing = stop.getBearing();
-        stopEntity.bookmark = stop.isBookmark();
         return stopEntity;
     }
 
     public List<StopEntity> transform(List<Stop> stopList) {
         List<StopEntity> stopEntityList = new ArrayList<>(stopList.size());
-        stopList.forEach(stop -> stopEntityList.add(transform(stop)));
+        for (Stop stop : stopList) {
+            stopEntityList.add(transform(stop));
+        }
         return stopEntityList;
     }
 }

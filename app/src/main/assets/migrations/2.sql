@@ -1,1 +1,0 @@
-ALTER TABLE Stops ADD COLUMN Bookmark INTEGER;

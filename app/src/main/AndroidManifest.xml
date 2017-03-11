@@ -23,7 +23,7 @@
             android:value="TransLate2.db"/>
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="2"/>
+            android:value="1"/>
 
         <activity
             android:name="by.vshkl.translate2.ui.activity.SplashScreenActivity"
