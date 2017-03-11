@@ -25,7 +25,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -50,6 +49,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.Drawer.OnDrawerItemClickListener;
+import com.mikepenz.materialdrawer.Drawer.OnDrawerItemLongClickListener;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +66,7 @@ import by.vshkl.translate2.App;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.model.MarkerWrapper;
 import by.vshkl.translate2.mvp.model.Stop;
+import by.vshkl.translate2.mvp.model.StopBookmark;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
 import by.vshkl.translate2.util.CookieUtils;
@@ -75,7 +81,7 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
         OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
-        OnFocusChangeListener {
+        OnFocusChangeListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_OVERVIEW = 15F;
@@ -98,6 +104,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private GoogleApiClient googleApiClient;
     private HashMap<Integer, MarkerWrapper> visibleMarkers;
     private BottomSheetBehavior bottomSheetBehavior;
+    private Drawer ndStopBookmarks;
     private boolean firstConnect = true;
 
     @Override
@@ -108,9 +115,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         initializeGoogleMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
+        initializeNavigationDrawer();
         initializeSearchView();
-
-        presenter.getAllStopBookmarksFromLocalDatabase();
     }
 
     @Override
@@ -246,6 +252,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         fabLocation.show();
     }
 
+    @Override
+    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+        return false;
+    }
+
+    @Override
+    public boolean onItemLongClick(View view, int position, IDrawerItem drawerItem) {
+        return false;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     @Override
@@ -291,6 +307,19 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void showSearchResult(List<Stop> stopList) {
         svSearch.swapSuggestions(stopList);
+    }
+
+    @Override
+    public void showStopBookmarks(List<StopBookmark> stopBookmarkList) {
+        ndStopBookmarks.removeAllItems();
+        for (StopBookmark stopBookmark : stopBookmarkList) {
+            ndStopBookmarks.addItem(new PrimaryDrawerItem()
+                    .withIdentifier(stopBookmark.getId())
+                    .withIcon(R.drawable.ic_place_suggestion)
+                    .withName(stopBookmark.getName())
+                    .withOnDrawerItemClickListener(this)
+            );
+        }
     }
 
     @Override
@@ -385,6 +414,14 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         svSearch.setOnSearchListener(this);
         svSearch.setOnBindSuggestionCallback(this);
         svSearch.setOnFocusChangeListener(this);
+        svSearch.attachNavigationDrawerToMenuButton(ndStopBookmarks.getDrawerLayout());
+    }
+
+    private void initializeNavigationDrawer() {
+        ndStopBookmarks = new DrawerBuilder()
+                .withActivity(MapActivity.this)
+                .build();
+        presenter.getAllStopBookmarksFromLocalDatabase();
     }
 
     private void setupMap() {

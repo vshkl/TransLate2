@@ -69,6 +69,10 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     // Search view
     compile 'com.github.arimorty:floatingsearchview:2.0.3'
+    // Navigation drawer
+    compile('com.mikepenz:materialdrawer:5.8.2@aar') {
+        transitive = true
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

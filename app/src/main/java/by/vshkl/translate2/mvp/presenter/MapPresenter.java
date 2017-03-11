@@ -118,18 +118,24 @@ public class MapPresenter extends MvpPresenter<MapView> {
         disposable = DbUtils.saveStopBookmark(stop)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aBoolean -> getViewState().showMessage(aBoolean
-                        ? R.string.bookmark_save_success
-                        : R.string.bookmark_save_fail));
+                .subscribe(aBoolean -> {
+                    getViewState().showMessage(aBoolean
+                            ? R.string.bookmark_save_success
+                            : R.string.bookmark_save_fail);
+                    getAllStopBookmarksFromLocalDatabase();
+                });
     }
 
     private void removeStopBookmark(Stop stop) {
         disposable = DbUtils.removeStopBookmark(stop)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aBoolean -> getViewState().showMessage(aBoolean
-                        ? R.string.bookmark_remove_fail
-                        : R.string.bookmark_remove_success));
+                .subscribe(aBoolean -> {
+                    getViewState().showMessage(aBoolean
+                            ? R.string.bookmark_remove_fail
+                            : R.string.bookmark_remove_success);
+                    getAllStopBookmarksFromLocalDatabase();
+                });
     }
 
     private void saveAllStopsToLocalDatabase() {
