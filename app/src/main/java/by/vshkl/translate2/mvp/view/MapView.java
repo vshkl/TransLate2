@@ -16,6 +16,8 @@ public interface MapView extends MvpView {
 
     void showMessage(int messageId);
 
+    void showToast(int messageId);
+
     void placeMarkers(List<Stop> stopList);
 
     void showSelectedStop(Stop stop, boolean bookmarked);

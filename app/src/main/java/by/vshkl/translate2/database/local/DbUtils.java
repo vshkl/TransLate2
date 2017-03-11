@@ -15,8 +15,6 @@ import by.vshkl.translate2.database.local.entity.transformer.StopEntityTransform
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 
 public class DbUtils {
 
@@ -78,6 +76,17 @@ public class DbUtils {
         return Observable.create(emitter -> {
             new Delete().from(StopBookmarkEntity.class).where("Id = ?", stop.getId()).execute();
             emitter.onNext(new Select().from(StopBookmarkEntity.class).where("Id = ?", stop.getId()).exists());
+        });
+    }
+
+    public static Observable<Boolean> renameStopBookmark(final int stopId, final String newStopName) {
+        return Observable.create(emitter -> {
+            StopBookmarkEntity stop = new Select().from(StopBookmarkEntity.class).where("Id = ?", stopId).executeSingle();
+            if (stop != null) {
+                stop.name = newStopName;
+                stop.save();
+            }
+            emitter.onNext(new Select().from(StopBookmarkEntity.class).where("Name = ?", newStopName).exists());
         });
     }
 }

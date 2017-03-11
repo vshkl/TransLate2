@@ -37,6 +37,18 @@ public class MapPresenter extends MvpPresenter<MapView> {
         super.onDestroy();
     }
 
+    public void setSelectedStopId(int selectedStopId) {
+        this.selectedStopId = selectedStopId;
+    }
+
+    public String getSelectedStopBookmarkName() {
+        return stopBookmarkList.stream()
+                .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
+                .findFirst()
+                .orElse(new StopBookmark())
+                .getName();
+    }
+
     public void getUpdatedTimestampFromRemoteDatabase() {
         disposable = FirebaseUtils.getUpdatedTimestamp()
                 .subscribeOn(Schedulers.io())
@@ -119,7 +131,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
-                    getViewState().showMessage(aBoolean
+                    getViewState().showToast(aBoolean
                             ? R.string.bookmark_save_success
                             : R.string.bookmark_save_fail);
                     getAllStopBookmarksFromLocalDatabase();
@@ -131,9 +143,21 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
-                    getViewState().showMessage(aBoolean
+                    getViewState().showToast(aBoolean
                             ? R.string.bookmark_remove_fail
                             : R.string.bookmark_remove_success);
+                    getAllStopBookmarksFromLocalDatabase();
+                });
+    }
+
+    public void renameStopBookmark(String newStopName) {
+        disposable = DbUtils.renameStopBookmark(selectedStopId, newStopName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    getViewState().showToast(aBoolean
+                            ? R.string.bookmark_rename_success
+                            : R.string.bookmark_rename_fail);
                     getAllStopBookmarksFromLocalDatabase();
                 });
     }

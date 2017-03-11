@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -71,6 +72,7 @@ import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
+import by.vshkl.translate2.ui.StopBookmarkListener;
 import by.vshkl.translate2.util.CookieUtils;
 import by.vshkl.translate2.util.DialogUtils;
 import by.vshkl.translate2.util.Navigation;
@@ -83,7 +85,7 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
         OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
-        OnFocusChangeListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener {
+        OnFocusChangeListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener, StopBookmarkListener {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_OVERVIEW = 15F;
@@ -208,10 +210,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (visibleMarkers.containsValue(markerWrapper)) {
             visibleMarkers.keySet().stream()
                     .filter(key -> visibleMarkers.get(key).equals(markerWrapper))
-                    .forEach(key -> {
-                        presenter.getStopById(key);
-                        System.out.println("Key " + key);
-                    });
+                    .forEach(key -> presenter.getStopById(key));
         }
         return false;
     }
@@ -251,7 +250,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onFocusCleared() {
-        fabLocation.show();
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+            fabLocation.show();
+        }
     }
 
     @Override
@@ -262,7 +263,29 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public boolean onItemLongClick(View view, int position, IDrawerItem drawerItem) {
+        presenter.setSelectedStopId((int) drawerItem.getIdentifier());
+        DialogUtils.showBookmarkActionsDialog(this, this);
         return false;
+    }
+
+    @Override
+    public void onEditBookmark() {
+        DialogUtils.shoeBookmarkRenameDialog(this, presenter.getSelectedStopBookmarkName(), this);
+    }
+
+    @Override
+    public void onDeleteBookmark() {
+        DialogUtils.showBookmarkDeleteConfirmationDialog(this, this);
+    }
+
+    @Override
+    public void onDeleteConfirmed() {
+        presenter.removeStopBookmark();
+    }
+
+    @Override
+    public void OnRenameConfirmed(String newStopName) {
+        presenter.renameStopBookmark(newStopName);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -282,6 +305,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void showMessage(int messageId) {
         Snackbar.make(clRoot, messageId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showToast(int messageId) {
+        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("UseSparseArrays")
@@ -323,9 +351,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 .withIcon(R.drawable.ic_stop_normal)
                 .withSelectedIcon(R.drawable.ic_stop_selected)
                 .withSelectedTextColor(ContextCompat.getColor(MapActivity.this, R.color.colorAccentText))
-                .withName(stopBookmark.getName())
-                .withOnDrawerItemClickListener(this)
-                .withOnDrawerItemClickListener(this)));
+                .withName(stopBookmark.getName())));
     }
 
     @Override
@@ -426,6 +452,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private void initializeNavigationDrawer() {
         ndStopBookmarks = new DrawerBuilder()
                 .withActivity(MapActivity.this)
+                .withOnDrawerItemClickListener(this)
+                .withOnDrawerItemLongClickListener(this)
                 .build();
         presenter.getAllStopBookmarksFromLocalDatabase();
     }
