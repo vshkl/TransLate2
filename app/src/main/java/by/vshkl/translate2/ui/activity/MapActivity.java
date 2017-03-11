@@ -15,6 +15,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -318,7 +319,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         for (StopBookmark stopBookmark : stopBookmarkList) {
             ndStopBookmarks.addItem(new PrimaryDrawerItem()
                     .withIdentifier(stopBookmark.getId())
-                    .withIcon(R.drawable.ic_place_suggestion)
+                    .withIcon(R.drawable.ic_stop_normal)
+                    .withSelectedIcon(R.drawable.ic_stop_selected)
+                    .withSelectedTextColor(ContextCompat.getColor(MapActivity.this, R.color.colorAccentText))
                     .withName(stopBookmark.getName())
                     .withOnDrawerItemClickListener(this)
             );
