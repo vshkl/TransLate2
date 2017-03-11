@@ -208,7 +208,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                     .filter(key -> visibleMarkers.get(key).equals(markerWrapper))
                     .forEach(key -> {
                         presenter.getStopById(key);
-                        highlightSelectedMarker(key);
+                        System.out.println("Key " + key);
                     });
         }
         return false;
@@ -254,6 +254,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+        presenter.getStopById((int) drawerItem.getIdentifier());
         return false;
     }
 
@@ -292,16 +293,18 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void showSelectedStop(final Stop stop, final boolean bookmarked) {
-        tvStopName.setText(stop.getName());
-        cbBookmark.setChecked(bookmarked);
-        loadWebView(URL_DASHBOARD + stop.getId());
-        fabLocation.hide(new FloatingActionButton.OnVisibilityChangedListener() {
-            @Override
-            public void onHidden(FloatingActionButton fab) {
-                super.onHidden(fab);
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        });
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(stop.getLatitude(), stop.getLongitude()), ZOOM_POSITION),
+                new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        moveToAndshowSelectedStop(stop, bookmarked);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        moveToAndshowSelectedStop(stop, bookmarked);
+                    }
+                });
     }
 
     @Override
@@ -487,6 +490,20 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         dropMarkerHighlight(zoom);
         visibleMarkers.get(key).setSelected(true);
         visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
+    }
+
+    private void moveToAndshowSelectedStop(final Stop stop, final boolean bookmarked) {
+        highlightSelectedMarker(stop.getId());
+        tvStopName.setText(stop.getName());
+        cbBookmark.setChecked(bookmarked);
+        loadWebView(URL_DASHBOARD + stop.getId());
+        fabLocation.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+            @Override
+            public void onHidden(FloatingActionButton fab) {
+                super.onHidden(fab);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
     }
 
     private void dropMarkerHighlight(float zoom) {
