@@ -1,6 +1,7 @@
 package by.vshkl.translate2.util;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -34,6 +35,7 @@ public class DialogUtils {
     public static void showBookmarkActionsDialog(final Context context, final StopBookmarkListener listener) {
         new MaterialDialog.Builder(context)
                 .items(R.array.bookmarks_dialog_actions)
+                .itemsColorRes(R.color.colorPrimaryText)
                 .itemsCallback((dialog, itemView, position, text) -> {
                     switch (position) {
                         case 0:
