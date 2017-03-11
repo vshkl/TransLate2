@@ -25,4 +25,27 @@
 
     <string name="search_view_hint">Search…</string>
 
+    <string name="bookmark_save_success">Bookmark added</string>
+    <string name="bookmark_save_fail">Bookmark add failed</string>
+    <string name="bookmark_remove_success">Bookmark removed</string>
+    <string name="bookmark_remove_fail">Bookmark remove failed</string>
+    <string name="bookmark_rename_success">Bookmark renames</string>
+    <string name="bookmark_rename_fail">Bookmark rename failed</string>
+    
+    <string name="nav_drawer_section_bookmarks">Saved stops</string>
+
+    <string name="bookmark_delete_message">Delete selected bookmark?</string>
+    <string name="bookmark_delete_ok">Delete</string>
+    <string name="bookmark_delete_cancel">@android:string/cancel</string>
+
+    <string-array name="bookmarks_dialog_actions">
+        <item>Rename stop</item>
+        <item>Delete stop</item>
+    </string-array>
+
+    <string name="bookmark_dialog_rename_title">Rename bookmark</string>
+    <string name="bookmark_dialog_rename_hint">Stop name</string>
+    <string name="bookmark_dialog_rename_ok">Rename</string>
+    <string name="bookmark_dialog_rename_cancel">@android:string/cancel</string>
+
 </resources>

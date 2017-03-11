@@ -17,4 +17,8 @@
         <item name="floatingSearch_suggestionRightIconColor">@color/colorIconGray</item>
     </style>
 
+    <style name="RadioButtonBookmark" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/check_box_bookmark</item>
+    </style>
+
 </resources>

@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
-        versionName "0.2.0"
+        versionName "0.3.0"
         vectorDrawables.useSupportLibrary = true
         resConfigs "en", "ru"
         buildConfigField("String", "ENCRYPTED_PREFERENCES_PWD", ENCRYPTED_PREFERENCES_PWD)
@@ -69,6 +69,12 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     // Search view
     compile 'com.github.arimorty:floatingsearchview:2.0.3'
+    // Navigation drawer
+    compile('com.mikepenz:materialdrawer:5.8.2@aar') {
+        transitive = true
+    }
+    // Material dialog
+    compile 'com.afollestad.material-dialogs:core:0.9.4.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

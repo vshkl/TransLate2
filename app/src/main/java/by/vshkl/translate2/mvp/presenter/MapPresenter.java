@@ -12,6 +12,8 @@ import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.DbUtils;
 import by.vshkl.translate2.database.remote.FirebaseUtils;
 import by.vshkl.translate2.mvp.model.Stop;
+import by.vshkl.translate2.mvp.model.StopBookmark;
+import by.vshkl.translate2.mvp.model.transformer.StopBookmarkTransformer;
 import by.vshkl.translate2.mvp.model.transformer.StopTransformer;
 import by.vshkl.translate2.mvp.view.MapView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,7 +25,9 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     private Disposable disposable;
     private List<Stop> stopList;
+    private List<StopBookmark> stopBookmarkList;
     private long updatedTimestamp;
+    private int selectedStopId;
 
     @Override
     public void onDestroy() {
@@ -31,6 +35,18 @@ public class MapPresenter extends MvpPresenter<MapView> {
             disposable.dispose();
         }
         super.onDestroy();
+    }
+
+    public void setSelectedStopId(int selectedStopId) {
+        this.selectedStopId = selectedStopId;
+    }
+
+    public String getSelectedStopBookmarkName() {
+        return stopBookmarkList.stream()
+                .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
+                .findFirst()
+                .orElse(new StopBookmark())
+                .getName();
     }
 
     public void getUpdatedTimestampFromRemoteDatabase() {
@@ -68,11 +84,22 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     public void getStopById(final int stopId) {
-        if (stopList != null) {
+        selectedStopId = stopId;
+        if (stopList != null && stopBookmarkList != null) {
             stopList.stream()
                     .filter(stop -> stop.getId() == stopId)
-                    .forEach(stop -> getViewState().showSelectedStop(stop));
+                    .forEach(stop -> getViewState().showSelectedStop(stop, isStopBookmarked()));
         }
+    }
+
+    public void getAllStopBookmarksFromLocalDatabase() {
+        disposable = DbUtils.getAllStopBookmarks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(stopBookmarkEntityList -> {
+                    stopBookmarkList = StopBookmarkTransformer.transform(stopBookmarkEntityList);
+                    getViewState().showStopBookmarks(stopBookmarkList);
+                });
     }
 
     public void searchStops(final String searchQuery) {
@@ -85,12 +112,69 @@ public class MapPresenter extends MvpPresenter<MapView> {
         }
     }
 
+    public void saveStopBookmark() {
+        stopList.stream()
+                .filter(stop -> stop.getId() == selectedStopId)
+                .findFirst()
+                .ifPresent(this::saveStopBookmark);
+    }
+
+    public void removeStopBookmark() {
+        stopList.stream()
+                .filter(stop -> stop.getId() == selectedStopId)
+                .findFirst()
+                .ifPresent(this::removeStopBookmark);
+    }
+
+    private void saveStopBookmark(Stop stop) {
+        disposable = DbUtils.saveStopBookmark(stop)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    getViewState().showToast(aBoolean
+                            ? R.string.bookmark_save_success
+                            : R.string.bookmark_save_fail);
+                    getAllStopBookmarksFromLocalDatabase();
+                });
+    }
+
+    private void removeStopBookmark(Stop stop) {
+        disposable = DbUtils.removeStopBookmark(stop)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    getViewState().showToast(aBoolean
+                            ? R.string.bookmark_remove_fail
+                            : R.string.bookmark_remove_success);
+                    getAllStopBookmarksFromLocalDatabase();
+                });
+    }
+
+    public void renameStopBookmark(String newStopName) {
+        disposable = DbUtils.renameStopBookmark(selectedStopId, newStopName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    getViewState().showToast(aBoolean
+                            ? R.string.bookmark_rename_success
+                            : R.string.bookmark_rename_fail);
+                    getAllStopBookmarksFromLocalDatabase();
+                });
+    }
+
     private void saveAllStopsToLocalDatabase() {
         disposable = DbUtils.saveAllStops(stopList, updatedTimestamp)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
                 });
+    }
+
+    private boolean isStopBookmarked() {
+        return stopBookmarkList.stream()
+                .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
+                .findAny()
+                .isPresent();
     }
 
     private void placeMarkers() {
