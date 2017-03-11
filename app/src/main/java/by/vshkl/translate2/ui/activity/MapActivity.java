@@ -55,6 +55,7 @@ import com.mikepenz.materialdrawer.Drawer.OnDrawerItemClickListener;
 import com.mikepenz.materialdrawer.Drawer.OnDrawerItemLongClickListener;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.HashMap;
@@ -316,16 +317,15 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void showStopBookmarks(List<StopBookmark> stopBookmarkList) {
         ndStopBookmarks.removeAllItems();
-        for (StopBookmark stopBookmark : stopBookmarkList) {
-            ndStopBookmarks.addItem(new PrimaryDrawerItem()
-                    .withIdentifier(stopBookmark.getId())
-                    .withIcon(R.drawable.ic_stop_normal)
-                    .withSelectedIcon(R.drawable.ic_stop_selected)
-                    .withSelectedTextColor(ContextCompat.getColor(MapActivity.this, R.color.colorAccentText))
-                    .withName(stopBookmark.getName())
-                    .withOnDrawerItemClickListener(this)
-            );
-        }
+        ndStopBookmarks.addItem(new SectionDrawerItem().withName(R.string.nav_drawer_section_bookmarks));
+        stopBookmarkList.forEach(stopBookmark -> ndStopBookmarks.addItem(new PrimaryDrawerItem()
+                .withIdentifier(stopBookmark.getId())
+                .withIcon(R.drawable.ic_stop_normal)
+                .withSelectedIcon(R.drawable.ic_stop_selected)
+                .withSelectedTextColor(ContextCompat.getColor(MapActivity.this, R.color.colorAccentText))
+                .withName(stopBookmark.getName())
+                .withOnDrawerItemClickListener(this)
+                .withOnDrawerItemClickListener(this)));
     }
 
     @Override

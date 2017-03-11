@@ -29,5 +29,7 @@
     <string name="bookmark_save_fail">Bookmark add failed</string>
     <string name="bookmark_remove_success">Bookmark removed</string>
     <string name="bookmark_remove_fail">Bookmark remove failed</string>
+    
+    <string name="nav_drawer_section_bookmarks">Saved stops</string>
 
 </resources>
