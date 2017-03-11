@@ -54,17 +54,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 });
     }
 
-    private void isOutdatedOrNotExists(final long updatedTimestamp) {
-        disposable = DbUtils.isOutdatedOrNotExists(updatedTimestamp)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aBoolean -> {
-                    if (aBoolean) {
-                        getViewState().showUpdateStopsSnackbar();
-                    }
-                });
-    }
-
     public void getAllStopsFromLocalDatabase() {
         disposable = DbUtils.getAllStops()
                 .subscribeOn(Schedulers.io())
@@ -73,6 +62,23 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     stopList = StopTransformer.transform(stopEntities);
                     placeMarkers();
                 });
+    }
+
+    public void getStopById(final int stopId) {
+        if (stopList != null) {
+            for (Stop stop : stopList) {
+                if (stop.getId() == stopId) {
+                    getViewState().showSelectedStop(stop);
+                }
+            }
+        }
+    }
+
+    public void searchStops(final String searchQuery) {
+        disposable = DbUtils.getStopsWithSearchQuery(searchQuery)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(stopEntities -> getViewState().showSearchResult(StopTransformer.transform(stopEntities)));
     }
 
     private void saveAllStopsToLocalDatabase() {
@@ -89,13 +95,14 @@ public class MapPresenter extends MvpPresenter<MapView> {
         }
     }
 
-    public void getStopById(final int stopId) {
-        if (stopList != null) {
-            for (Stop stop : stopList) {
-                if (stop.getId() == stopId) {
-                    getViewState().showSelectedStop(stop);
-                }
-            }
-        }
+    private void isOutdatedOrNotExists(final long updatedTimestamp) {
+        disposable = DbUtils.isOutdatedOrNotExists(updatedTimestamp)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    if (aBoolean) {
+                        getViewState().showUpdateStopsSnackbar();
+                    }
+                });
     }
 }

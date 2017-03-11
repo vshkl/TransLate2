@@ -4,8 +4,14 @@ import com.activeandroid.ActiveAndroid;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import by.vshkl.translate2.database.local.entity.StopEntity;
 import by.vshkl.translate2.database.local.entity.UpdatedEntity;
@@ -49,6 +55,21 @@ public class DbUtils {
                 ActiveAndroid.endTransaction();
                 emitter.onNext(true);
             }
+        });
+    }
+
+    public static Observable<List<StopEntity>> getStopsWithSearchQuery(String searchQuery) {
+        return Observable.create(emitter -> {
+            List<StopEntity> stopEntityList = new Select()
+                    .from(StopEntity.class)
+                    .where("Name LIKE ?", new String[]{'%' + searchQuery + '%'})
+                    .orderBy("Name ASC")
+                    .execute();
+            Map<String, StopEntity> entityMap = new HashMap<>();
+            for (StopEntity stopEntity :  stopEntityList) {
+                entityMap.put(stopEntity.name, stopEntity);
+            }
+            emitter.onNext(entityMap != null ? new ArrayList<>(entityMap.values()) : Collections.emptyList());
         });
     }
 }

@@ -98,6 +98,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         initializeGoogleMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
+        svSearch.setOnQueryChangeListener(this);
     }
 
     @Override
@@ -185,7 +186,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onSearchTextChanged(String oldQuery, String newQuery) {
-
+        if (newQuery.length() > 2) {
+            presenter.searchStops(newQuery);
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -227,6 +230,13 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+    }
+
+    @Override
+    public void showSearchResult(List<Stop> stopList) {
+        svSearch.swapSuggestions(stopList);
+//        System.out.println("Stops");
+        System.out.println(stopList);
     }
 
     @Override

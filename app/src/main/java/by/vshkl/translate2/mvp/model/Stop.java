@@ -1,6 +1,10 @@
 package by.vshkl.translate2.mvp.model;
 
-public class Stop {
+import android.os.Parcel;
+
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+
+public class Stop implements SearchSuggestion {
 
     private int id;
     private String name;
@@ -75,5 +79,20 @@ public class Stop {
         sb.append(", ").append(longitude);
         sb.append("]}");
         return sb.toString();
+    }
+
+    @Override
+    public String getBody() {
+        return name;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
     }
 }
