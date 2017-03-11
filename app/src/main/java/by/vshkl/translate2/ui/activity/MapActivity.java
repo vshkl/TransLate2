@@ -21,6 +21,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,6 +30,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener;
 import com.arlib.floatingsearchview.FloatingSearchView.OnSearchListener;
+import com.arlib.floatingsearchview.FloatingSearchView.OnFocusChangeListener;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter.OnBindSuggestionCallback;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -69,7 +72,8 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
-        OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener {
+        OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
+        OnFocusChangeListener {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_OVERVIEW = 15F;
@@ -197,6 +201,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
+    public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView,
+                                 SearchSuggestion item, int itemPosition) {
+        leftIcon.setImageResource(R.drawable.ic_place_suggestion);
+    }
+
+    @Override
     public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
         Stop stop = (Stop) searchSuggestion;
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
@@ -206,6 +216,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void onSearchAction(String currentQuery) {
 
+    }
+
+    @Override
+    public void onFocus() {
+        fabLocation.hide();
+    }
+
+    @Override
+    public void onFocusCleared() {
+        fabLocation.show();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -344,6 +364,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private void initializeSearchView() {
         svSearch.setOnQueryChangeListener(this);
         svSearch.setOnSearchListener(this);
+        svSearch.setOnBindSuggestionCallback(this);
+        svSearch.setOnFocusChangeListener(this);
     }
 
     private void setupMap() {
