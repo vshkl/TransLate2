@@ -70,7 +70,6 @@
                 />
 
             <ImageView
-                android:id="@+id/iv_icon_stop"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:padding="16dp"
