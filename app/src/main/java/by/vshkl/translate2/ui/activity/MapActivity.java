@@ -21,11 +21,18 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.FloatingSearchView.OnFocusChangeListener;
+import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener;
+import com.arlib.floatingsearchview.FloatingSearchView.OnSearchListener;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter.OnBindSuggestionCallback;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.location.LocationServices;
@@ -65,7 +72,8 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
-        OnMapClickListener, OnMarkerClickListener {
+        OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
+        OnFocusChangeListener {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_OVERVIEW = 15F;
@@ -75,6 +83,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private static final String URL_DASHBOARD = "http://www.minsktrans.by/lookout_yard/Home/Index/minsk?stopsearch&s=";
 
     @BindView(R.id.root) CoordinatorLayout clRoot;
+    @BindView(R.id.sv_search) FloatingSearchView svSearch;
     @BindView(R.id.fl_bottom_sheet) FrameLayout flBottomSheet;
     @BindView(R.id.fb_location) FloatingActionButton fabLocation;
     @BindView(R.id.tv_stop_name) TextView tvStopName;
@@ -86,6 +95,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private GoogleApiClient googleApiClient;
     private HashMap<Integer, MarkerWrapper> visibleMarkers;
     private BottomSheetBehavior bottomSheetBehavior;
+    private boolean firstConnect = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +105,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         initializeGoogleMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
+        initializeSearchView();
     }
 
     @Override
@@ -141,7 +152,10 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        showUserLocation();
+        if (firstConnect) {
+            firstConnect = false;
+            showUserLocation();
+        }
     }
 
     @Override
@@ -170,14 +184,52 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public boolean onMarkerClick(Marker marker) {
         MarkerWrapper markerWrapper = new MarkerWrapper(marker);
         if (visibleMarkers.containsValue(markerWrapper)) {
-            for (Integer key : visibleMarkers.keySet()) {
-                if (visibleMarkers.get(key).equals(markerWrapper)) {
-                    presenter.getStopById(key);
-                    highlightSelectedMarker(key);
-                }
-            }
+            visibleMarkers.keySet().stream()
+                    .filter(key -> visibleMarkers.get(key).equals(markerWrapper))
+                    .forEach(key -> {
+                        presenter.getStopById(key);
+                        highlightSelectedMarker(key);
+                    });
         }
         return false;
+    }
+
+    @Override
+    public void onSearchTextChanged(String oldQuery, String newQuery) {
+        if (!oldQuery.equals("") && newQuery.equals("")) {
+            svSearch.clearSuggestions();
+        }
+        if (newQuery.length() > 2) {
+            presenter.searchStops(newQuery);
+        }
+    }
+
+    @Override
+    public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView,
+                                 SearchSuggestion item, int itemPosition) {
+        leftIcon.setImageResource(R.drawable.ic_place_suggestion);
+    }
+
+    @Override
+    public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+        Stop stop = (Stop) searchSuggestion;
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(stop.getLatitude(), stop.getLongitude()), ZOOM_POSITION));
+    }
+
+    @Override
+    public void onSearchAction(String currentQuery) {
+
+    }
+
+    @Override
+    public void onFocus() {
+        fabLocation.hide();
+    }
+
+    @Override
+    public void onFocusCleared() {
+        fabLocation.show();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -219,6 +271,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+    }
+
+    @Override
+    public void showSearchResult(List<Stop> stopList) {
+        svSearch.swapSuggestions(stopList);
     }
 
     @Override
@@ -308,6 +365,13 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         wvDashboard.setWebViewClient(new WebViewClient());
     }
 
+    private void initializeSearchView() {
+        svSearch.setOnQueryChangeListener(this);
+        svSearch.setOnSearchListener(this);
+        svSearch.setOnBindSuggestionCallback(this);
+        svSearch.setOnFocusChangeListener(this);
+    }
+
     private void setupMap() {
         UiSettings settings = map.getUiSettings();
         settings.setCompassEnabled(false);
@@ -380,11 +444,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 visibleMarkers.remove(key);
             }
         }
-        for (Integer key : visibleMarkers.keySet()) {
-            if (visibleMarkers.get(key).isSelected()) {
-                visibleMarkers.get(key).setSelected(false);
-                visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
-            }
-        }
+        visibleMarkers.keySet().stream()
+                .filter(key -> visibleMarkers.get(key).isSelected())
+                .forEach(key -> {
+                    visibleMarkers.get(key).setSelected(false);
+                    visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+                });
     }
 }

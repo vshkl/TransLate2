@@ -18,6 +18,8 @@ public interface MapView extends MvpView {
 
     void showSelectedStop(Stop stop);
 
+    void showSearchResult(List<Stop> stopList);
+
     void showProgressBar();
 
     void hideProgressBar();

@@ -3,7 +3,10 @@ package by.vshkl.translate2.mvp.presenter;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.DbUtils;
@@ -54,17 +57,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 });
     }
 
-    private void isOutdatedOrNotExists(final long updatedTimestamp) {
-        disposable = DbUtils.isOutdatedOrNotExists(updatedTimestamp)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aBoolean -> {
-                    if (aBoolean) {
-                        getViewState().showUpdateStopsSnackbar();
-                    }
-                });
-    }
-
     public void getAllStopsFromLocalDatabase() {
         disposable = DbUtils.getAllStops()
                 .subscribeOn(Schedulers.io())
@@ -73,6 +65,24 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     stopList = StopTransformer.transform(stopEntities);
                     placeMarkers();
                 });
+    }
+
+    public void getStopById(final int stopId) {
+        if (stopList != null) {
+            stopList.stream()
+                    .filter(stop -> stop.getId() == stopId)
+                    .forEach(stop -> getViewState().showSelectedStop(stop));
+        }
+    }
+
+    public void searchStops(final String searchQuery) {
+        if (stopList != null) {
+            Map<String, Stop> stopMap = new HashMap<>();
+            stopList.stream()
+                    .filter(stop -> stop.getName().toLowerCase().contains(searchQuery.toLowerCase()))
+                    .forEach(stop -> stopMap.put(stop.getName(), stop));
+            getViewState().showSearchResult(new ArrayList<>(stopMap.values()));
+        }
     }
 
     private void saveAllStopsToLocalDatabase() {
@@ -89,13 +99,14 @@ public class MapPresenter extends MvpPresenter<MapView> {
         }
     }
 
-    public void getStopById(final int stopId) {
-        if (stopList != null) {
-            for (Stop stop : stopList) {
-                if (stop.getId() == stopId) {
-                    getViewState().showSelectedStop(stop);
-                }
-            }
-        }
+    private void isOutdatedOrNotExists(final long updatedTimestamp) {
+        disposable = DbUtils.isOutdatedOrNotExists(updatedTimestamp)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    if (aBoolean) {
+                        getViewState().showUpdateStopsSnackbar();
+                    }
+                });
     }
 }

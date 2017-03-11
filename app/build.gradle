@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
-        versionName "0.1.8"
+        versionName "0.2.0"
         vectorDrawables.useSupportLibrary = true
         resConfigs "en", "ru"
         buildConfigField("String", "ENCRYPTED_PREFERENCES_PWD", ENCRYPTED_PREFERENCES_PWD)
@@ -67,6 +67,8 @@ dependencies {
     // LeakCanary
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    // Search view
+    compile 'com.github.arimorty:floatingsearchview:2.0.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

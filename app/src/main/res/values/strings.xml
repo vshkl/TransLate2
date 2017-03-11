@@ -23,5 +23,6 @@
 
     <string name="map_message_stops_updated">Stops are up to date.</string>
 
+    <string name="search_view_hint">Search…</string>
 
 </resources>
