@@ -18,6 +18,20 @@
         tools:context=".ui.activity.MapActivity"
         />
 
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/sv_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:floatingSearch_close_search_on_keyboard_dismiss="true"
+        app:floatingSearch_leftActionMode="showHamburger"
+        app:floatingSearch_searchBarMarginLeft="8dp"
+        app:floatingSearch_searchBarMarginRight="8dp"
+        app:floatingSearch_searchBarMarginTop="8dp"
+        app:floatingSearch_searchHint="Search..."
+        app:floatingSearch_showSearchKey="false"
+        app:floatingSearch_suggestionsListAnimDuration="250"
+        />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fb_location"
         android:layout_width="wrap_content"

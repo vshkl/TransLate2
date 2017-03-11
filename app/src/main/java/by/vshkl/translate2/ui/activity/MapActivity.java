@@ -26,6 +26,8 @@ import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.location.LocationServices;
@@ -65,7 +67,7 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
-        OnMapClickListener, OnMarkerClickListener {
+        OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_OVERVIEW = 15F;
@@ -75,6 +77,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     private static final String URL_DASHBOARD = "http://www.minsktrans.by/lookout_yard/Home/Index/minsk?stopsearch&s=";
 
     @BindView(R.id.root) CoordinatorLayout clRoot;
+    @BindView(R.id.sv_search) FloatingSearchView svSearch;
     @BindView(R.id.fl_bottom_sheet) FrameLayout flBottomSheet;
     @BindView(R.id.fb_location) FloatingActionButton fabLocation;
     @BindView(R.id.tv_stop_name) TextView tvStopName;
@@ -178,6 +181,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
             }
         }
         return false;
+    }
+
+    @Override
+    public void onSearchTextChanged(String oldQuery, String newQuery) {
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
