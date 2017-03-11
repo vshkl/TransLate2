@@ -76,10 +76,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
         if (stopList != null && stopBookmarkList != null) {
             stopList.stream()
                     .filter(stop -> stop.getId() == stopId)
-                    .forEach(stop -> getViewState().showSelectedStop(stop, stopBookmarkList.stream()
-                            .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
-                            .findAny()
-                            .isPresent()));
+                    .forEach(stop -> getViewState().showSelectedStop(stop, isStopBookmarked()));
         }
     }
 
@@ -89,7 +86,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(stopBookmarkEntityList -> {
                     stopBookmarkList = StopBookmarkTransformer.transform(stopBookmarkEntityList);
-                    // POPULATE DRAWER
+                    getViewState().showStopBookmarks(stopBookmarkList);
                 });
     }
 
@@ -107,25 +104,32 @@ public class MapPresenter extends MvpPresenter<MapView> {
         stopList.stream()
                 .filter(stop -> stop.getId() == selectedStopId)
                 .findFirst()
-                .ifPresent(stop -> disposable = DbUtils.saveStopBookmark(stop)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(aBoolean -> getViewState().showMessage(aBoolean
-                                ? R.string.bookmark_save_success
-                                : R.string.bookmark_save_fail)));
-
+                .ifPresent(this::saveStopBookmark);
     }
 
     public void removeStopBookmark() {
         stopList.stream()
                 .filter(stop -> stop.getId() == selectedStopId)
                 .findFirst()
-                .ifPresent(stop -> disposable = DbUtils.removeStopBookmark(stop)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(aBoolean -> getViewState().showMessage(aBoolean
-                                ? R.string.bookmark_remove_fail
-                                : R.string.bookmark_remove_success)));
+                .ifPresent(this::removeStopBookmark);
+    }
+
+    private void saveStopBookmark(Stop stop) {
+        disposable = DbUtils.saveStopBookmark(stop)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> getViewState().showMessage(aBoolean
+                        ? R.string.bookmark_save_success
+                        : R.string.bookmark_save_fail));
+    }
+
+    private void removeStopBookmark(Stop stop) {
+        disposable = DbUtils.removeStopBookmark(stop)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> getViewState().showMessage(aBoolean
+                        ? R.string.bookmark_remove_fail
+                        : R.string.bookmark_remove_success));
     }
 
     private void saveAllStopsToLocalDatabase() {
@@ -134,6 +138,13 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
                 });
+    }
+
+    private boolean isStopBookmarked() {
+        return stopBookmarkList.stream()
+                .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
+                .findAny()
+                .isPresent();
     }
 
     private void placeMarkers() {
