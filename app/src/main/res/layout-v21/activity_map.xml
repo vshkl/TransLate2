@@ -85,15 +85,15 @@
             tools:ignore="ContentDescription"
             />
 
-        <ImageView
-            android:id="@+id/iv_bookmark"
-            android:layout_width="56dp"
+        <CheckBox
+            android:id="@+id/cb_bookmark"
+            android:layout_width="wrap_content"
             android:layout_height="56dp"
-            android:elevation="4dp"
-            android:padding="16dp"
             android:layout_gravity="end"
-            app:srcCompat="@drawable/ic_bookmark"
-            tools:ignore="ContentDescription"
+            android:button="@drawable/check_box_bookmark"
+            android:elevation="4dp"
+            android:paddingEnd="16dp"
+            tools:ignore="RtlSymmetry"
             />
 
     </FrameLayout>

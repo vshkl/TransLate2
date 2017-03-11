@@ -15,7 +15,7 @@ public class StopBookmarkEntityTransformer {
         return stopBookmarkEntity;
     }
 
-    public List<StopBookmarkEntity> transform(List<StopBookmark> stopBookmarkList) {
+    public static List<StopBookmarkEntity> transform(List<StopBookmark> stopBookmarkList) {
         List<StopBookmarkEntity> stopBookmarkEntityList = new ArrayList<>(stopBookmarkList.size());
         stopBookmarkList.forEach(stop -> stopBookmarkEntityList.add(transform(stop)));
         return stopBookmarkEntityList;

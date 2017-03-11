@@ -20,10 +20,12 @@ import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -89,6 +91,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @BindView(R.id.tv_stop_name) TextView tvStopName;
     @BindView(R.id.wv_dashboard) WebView wvDashboard;
     @BindView(R.id.pb_loading) ProgressBar pbLoading;
+    @BindView(R.id.cb_bookmark) CheckBox cbBookmark;
 
     @InjectPresenter MapPresenter presenter;
     private GoogleMap map;
@@ -106,6 +109,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         initializeBottomSheet();
         initializeGoogleApiClient();
         initializeSearchView();
+
+        presenter.getAllStopBookmarksFromLocalDatabase();
     }
 
     @Override
@@ -148,6 +153,15 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @OnClick(R.id.fb_location)
     void onLocationClicked() {
         MapActivityPermissionsDispatcher.updateCoordinatesWithCheck(this);
+    }
+
+    @OnClick(R.id.cb_bookmark)
+    void onBookmarkClicked() {
+        if (cbBookmark.isChecked()) {
+            presenter.saveStopBookmark();
+        } else {
+            presenter.removeStopBookmark();
+        }
     }
 
     @Override
@@ -261,8 +275,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void showSelectedStop(final Stop stop) {
+    public void showSelectedStop(final Stop stop, final boolean bookmarked) {
         tvStopName.setText(stop.getName());
+        cbBookmark.setChecked(bookmarked);
         loadWebView(URL_DASHBOARD + stop.getId());
         fabLocation.hide(new FloatingActionButton.OnVisibilityChangedListener() {
             @Override

@@ -12,6 +12,8 @@ import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.DbUtils;
 import by.vshkl.translate2.database.remote.FirebaseUtils;
 import by.vshkl.translate2.mvp.model.Stop;
+import by.vshkl.translate2.mvp.model.StopBookmark;
+import by.vshkl.translate2.mvp.model.transformer.StopBookmarkTransformer;
 import by.vshkl.translate2.mvp.model.transformer.StopTransformer;
 import by.vshkl.translate2.mvp.view.MapView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,7 +25,9 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     private Disposable disposable;
     private List<Stop> stopList;
+    private List<StopBookmark> stopBookmarkList;
     private long updatedTimestamp;
+    private int selectedStopId;
 
     @Override
     public void onDestroy() {
@@ -68,11 +72,25 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     public void getStopById(final int stopId) {
-        if (stopList != null) {
+        selectedStopId = stopId;
+        if (stopList != null && stopBookmarkList != null) {
             stopList.stream()
                     .filter(stop -> stop.getId() == stopId)
-                    .forEach(stop -> getViewState().showSelectedStop(stop));
+                    .forEach(stop -> getViewState().showSelectedStop(stop, stopBookmarkList.stream()
+                            .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
+                            .findAny()
+                            .isPresent()));
         }
+    }
+
+    public void getAllStopBookmarksFromLocalDatabase() {
+        disposable = DbUtils.getAllStopBookmarks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(stopBookmarkEntityList -> {
+                    stopBookmarkList = StopBookmarkTransformer.transform(stopBookmarkEntityList);
+                    // POPULATE DRAWER
+                });
     }
 
     public void searchStops(final String searchQuery) {
@@ -83,6 +101,31 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     .forEach(stop -> stopMap.put(stop.getName(), stop));
             getViewState().showSearchResult(new ArrayList<>(stopMap.values()));
         }
+    }
+
+    public void saveStopBookmark() {
+        stopList.stream()
+                .filter(stop -> stop.getId() == selectedStopId)
+                .findFirst()
+                .ifPresent(stop -> disposable = DbUtils.saveStopBookmark(stop)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aBoolean -> getViewState().showMessage(aBoolean
+                                ? R.string.bookmark_save_success
+                                : R.string.bookmark_save_fail)));
+
+    }
+
+    public void removeStopBookmark() {
+        stopList.stream()
+                .filter(stop -> stop.getId() == selectedStopId)
+                .findFirst()
+                .ifPresent(stop -> disposable = DbUtils.removeStopBookmark(stop)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aBoolean -> getViewState().showMessage(aBoolean
+                                ? R.string.bookmark_remove_fail
+                                : R.string.bookmark_remove_success)));
     }
 
     private void saveAllStopsToLocalDatabase() {
