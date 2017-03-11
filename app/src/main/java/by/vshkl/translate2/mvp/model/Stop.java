@@ -11,6 +11,7 @@ public class Stop implements SearchSuggestion {
     private float latitude;
     private float longitude;
     private int bearing;
+    private boolean bookmark;
 
     public Stop() {
     }
@@ -55,6 +56,14 @@ public class Stop implements SearchSuggestion {
         this.bearing = bearing;
     }
 
+    public boolean isBookmark() {
+        return bookmark;
+    }
+
+    public void setBookmark(boolean bookmark) {
+        this.bookmark = bookmark;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,9 +84,11 @@ public class Stop implements SearchSuggestion {
         final StringBuilder sb = new StringBuilder("Stop{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", [").append(latitude);
-        sb.append(", ").append(longitude);
-        sb.append("]}");
+        sb.append(", latitude=").append(latitude);
+        sb.append(", longitude=").append(longitude);
+        sb.append(", bearing=").append(bearing);
+        sb.append(", bookmark=").append(bookmark);
+        sb.append('}');
         return sb.toString();
     }
 

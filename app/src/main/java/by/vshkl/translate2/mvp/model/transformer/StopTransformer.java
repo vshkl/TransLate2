@@ -15,14 +15,13 @@ public class StopTransformer {
         stop.setLatitude(stopEntity.latitude);
         stop.setLongitude(stopEntity.longitude);
         stop.setBearing(stopEntity.bearing);
+        stop.setBookmark(stopEntity.bookmark);
         return stop;
     }
 
     public static List<Stop> transform(List<StopEntity> stopEntityList) {
         List<Stop> stopList = new ArrayList<>(stopEntityList.size());
-        for (StopEntity stopEntity : stopEntityList) {
-            stopList.add(transform(stopEntity));
-        }
+        stopEntityList.forEach(stopEntity -> stopList.add(transform(stopEntity)));
         return stopList;
     }
 }
