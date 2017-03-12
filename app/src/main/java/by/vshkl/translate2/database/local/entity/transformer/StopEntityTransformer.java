@@ -20,7 +20,9 @@ public class StopEntityTransformer {
 
     public static List<StopEntity> transform(List<Stop> stopList) {
         List<StopEntity> stopEntityList = new ArrayList<>(stopList.size());
-        stopList.forEach(stop -> stopEntityList.add(transform(stop)));
+        for (Stop stop : stopList) {
+            stopEntityList.add(transform(stop));
+        }
         return stopEntityList;
     }
 }

@@ -52,7 +52,9 @@ public class DbUtils {
         return Observable.create(emitter -> {
             ActiveAndroid.beginTransaction();
             try {
-                stopList.forEach(stop -> StopEntityTransformer.transform(stop).save());
+                for (Stop stop : stopList) {
+                    StopEntityTransformer.transform(stop).save();
+                }
                 new Delete().from(UpdatedEntity.class).execute();
                 UpdatedEntity updatedEntity = new UpdatedEntity();
                 updatedEntity.undatedTimestamp = updatedTimestamp;

@@ -42,11 +42,13 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     public String getSelectedStopBookmarkName() {
-        return stopBookmarkList.stream()
-                .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
-                .findFirst()
-                .orElse(new StopBookmark())
-                .getName();
+        String stopBookmarkName = "";
+        for (StopBookmark stopBookmark : stopBookmarkList) {
+            if (stopBookmark.getId() == selectedStopId) {
+                stopBookmarkName = stopBookmark.getName();
+            }
+        }
+        return stopBookmarkName;
     }
 
     public void getUpdatedTimestampFromRemoteDatabase() {
@@ -86,9 +88,11 @@ public class MapPresenter extends MvpPresenter<MapView> {
     public void getStopById(final int stopId) {
         selectedStopId = stopId;
         if (stopList != null && stopBookmarkList != null) {
-            stopList.stream()
-                    .filter(stop -> stop.getId() == stopId)
-                    .forEach(stop -> getViewState().showSelectedStop(stop, isStopBookmarked()));
+            for (Stop stop : stopList) {
+                if (stop.getId() == stopId) {
+                    getViewState().showSelectedStop(stop, isStopBookmarked());
+                }
+            }
         }
     }
 
@@ -105,25 +109,29 @@ public class MapPresenter extends MvpPresenter<MapView> {
     public void searchStops(final String searchQuery) {
         if (stopList != null) {
             Map<String, Stop> stopMap = new HashMap<>();
-            stopList.stream()
-                    .filter(stop -> stop.getName().toLowerCase().contains(searchQuery.toLowerCase()))
-                    .forEach(stop -> stopMap.put(stop.getName(), stop));
+            for (Stop stop : stopList) {
+                if (stop.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                    stopMap.put(stop.getName(), stop);
+                }
+            }
             getViewState().showSearchResult(new ArrayList<>(stopMap.values()));
         }
     }
 
     public void saveStopBookmark() {
-        stopList.stream()
-                .filter(stop -> stop.getId() == selectedStopId)
-                .findFirst()
-                .ifPresent(this::saveStopBookmark);
+        for (Stop stop : stopList) {
+            if (stop.getId() == selectedStopId) {
+                saveStopBookmark(stop);
+            }
+        }
     }
 
     public void removeStopBookmark() {
-        stopList.stream()
-                .filter(stop -> stop.getId() == selectedStopId)
-                .findFirst()
-                .ifPresent(this::removeStopBookmark);
+        for (Stop stop : stopList) {
+            if (stop.getId() == selectedStopId) {
+                removeStopBookmark(stop);
+            }
+        }
     }
 
     private void saveStopBookmark(Stop stop) {
@@ -171,10 +179,10 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     private boolean isStopBookmarked() {
-        return stopBookmarkList.stream()
-                .filter(stopBookmark -> stopBookmark.getId() == selectedStopId)
-                .findAny()
-                .isPresent();
+        for (StopBookmark stopBookmark : stopBookmarkList) {
+            return stopBookmark.getId() == selectedStopId;
+        }
+        return false;
     }
 
     private void placeMarkers() {

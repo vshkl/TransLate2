@@ -213,9 +213,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public boolean onMarkerClick(Marker marker) {
         MarkerWrapper markerWrapper = new MarkerWrapper(marker);
         if (visibleMarkers.containsValue(markerWrapper)) {
-            visibleMarkers.keySet().stream()
-                    .filter(key -> visibleMarkers.get(key).equals(markerWrapper))
-                    .forEach(key -> presenter.getStopById(key));
+            for (Integer key : visibleMarkers.keySet()) {
+                if (visibleMarkers.get(key).equals(markerWrapper)) {
+                    presenter.getStopById(key);
+                    highlightSelectedMarker(key);
+                }
+            }
         }
         return false;
     }
@@ -360,12 +363,14 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public void showStopBookmarks(List<StopBookmark> stopBookmarkList) {
         ndStopBookmarks.removeAllItems();
         ndStopBookmarks.addItem(new SectionDrawerItem().withName(R.string.nav_drawer_section_bookmarks));
-        stopBookmarkList.forEach(stopBookmark -> ndStopBookmarks.addItem(new PrimaryDrawerItem()
-                .withIdentifier(stopBookmark.getId())
-                .withIcon(R.drawable.ic_stop_normal)
-                .withSelectedIcon(R.drawable.ic_stop_selected)
-                .withSelectedTextColor(ContextCompat.getColor(MapActivity.this, R.color.colorAccentText))
-                .withName(stopBookmark.getName())));
+        for (StopBookmark stopBookmark : stopBookmarkList) {
+            ndStopBookmarks.addItem(new PrimaryDrawerItem()
+                    .withIdentifier(stopBookmark.getId())
+                    .withIcon(R.drawable.ic_stop_normal)
+                    .withSelectedIcon(R.drawable.ic_stop_selected)
+                    .withSelectedTextColor(ContextCompat.getColor(MapActivity.this, R.color.colorAccentText))
+                    .withName(stopBookmark.getName()));
+        }
     }
 
     @Override
@@ -560,11 +565,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 visibleMarkers.remove(key);
             }
         }
-        visibleMarkers.keySet().stream()
-                .filter(key -> visibleMarkers.get(key).isSelected())
-                .forEach(key -> {
-                    visibleMarkers.get(key).setSelected(false);
-                    visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
-                });
+        for (Integer key : visibleMarkers.keySet()) {
+            if (visibleMarkers.get(key).isSelected()) {
+                visibleMarkers.get(key).setSelected(false);
+                visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+            }
+        }
     }
 }

@@ -44,7 +44,9 @@ public class FirebaseUtils {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<Stop> stopList = new ArrayList<>();
-                    dataSnapshot.getChildren().forEach(stopSnapshot -> stopList.add(stopSnapshot.getValue(Stop.class)));
+                    for (DataSnapshot stopSnapshot : dataSnapshot.getChildren()) {
+                        stopList.add(stopSnapshot.getValue(Stop.class));
+                    }
                     emitter.onNext(stopList);
                 }
 
