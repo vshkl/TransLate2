@@ -2,6 +2,7 @@ package by.vshkl.translate2;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.activeandroid.ActiveAndroid;
 import com.squareup.leakcanary.LeakCanary;
@@ -18,6 +19,7 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         super.onCreate();
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;

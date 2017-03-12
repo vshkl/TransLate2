@@ -2,6 +2,8 @@ package by.vshkl.translate2.mvp.model.transformer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import by.vshkl.translate2.database.local.entity.StopBookmarkEntity;
 import by.vshkl.translate2.mvp.model.StopBookmark;
