@@ -14,9 +14,9 @@ public class DialogUtils {
     public static void showLocationRationaleDialog(final Context context, final PermissionRequest request) {
         new MaterialDialog.Builder(context)
                 .title(R.string.map_permission_rationale_title)
-                .content(R.string.map_permission_rationale_title)
+                .content(R.string.map_permission_rationale_message)
                 .positiveText(R.string.map_location_ok)
-                .positiveText(R.string.map_location_cancel)
+                .negativeText(R.string.map_location_cancel)
                 .onPositive((dialog, which) -> request.proceed())
                 .onNegative(((dialog, which) -> request.cancel()))
                 .show();
@@ -24,9 +24,10 @@ public class DialogUtils {
 
     public static void showLocationTurnOnDialog(final Context context) {
         new MaterialDialog.Builder(context)
-                .title(R.string.map_location_message)
+                .title(R.string.map_permission_rationale_title)
+                .content(R.string.map_location_message)
                 .positiveText(R.string.map_location_ok)
-                .positiveText(R.string.map_location_cancel)
+                .negativeText(R.string.map_location_cancel)
                 .onPositive((dialog, which) -> Navigation.navigateToLocationSettings(context))
                 .show();
     }

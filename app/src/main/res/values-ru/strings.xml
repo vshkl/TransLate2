@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Map screen -->
+
+    <string name="map_update_stops_message" translatable="true">Необходимо обновить список остановок.</string>
+    <string name="map_update_stops_update" translatable="true">Обновить</string>
+
+    <string name="map_permission_rationale_title" translatable="true">Местоположение</string>
+    <string name="map_permission_rationale_message" translatable="true">Разрешить TransLate доступ к местоположению этого устройства?</string>
+    <string name="map_permission_rationale_allow" translatable="true">Разрешить</string>
+    <string name="map_permission_rationale_deny" translatable="true">Отказать</string>
+    <string name="map_permission_denied_message" translatable="true">Отказано в определении местоположения.</string>
+    <string name="map_permission_denied_settings" translatable="true">Настройки</string>
+
+    <string name="map_location_message" translatable="true">Для продолжения необходимо включить службу определения местоположения.</string>
+    <string name="map_location_ok" translatable="true">Включить</string>
+    <string name="map_location_cancel" translatable="true">@android:string/cancel</string>
+
+    <string name="map_message_stops_updated" translatable="true">Список остановок обновлен.</string>
+
+    <string name="search_view_hint" translatable="true">Поиск…</string>
+
+    <string name="bookmark_save_success" translatable="true">Закладка добавлена.</string>
+    <string name="bookmark_save_fail" translatable="true">Не удалось добавить закладку.</string>
+    <string name="bookmark_remove_success" translatable="true">Закладка удалена.</string>
+    <string name="bookmark_remove_fail" translatable="true">Не удалось удалить закладку.</string>
+    <string name="bookmark_rename_success" translatable="true">Закладка переименована.</string>
+    <string name="bookmark_rename_fail" translatable="true">Не удалось переименовать закладку.</string>
+
+    <string name="nav_drawer_section_bookmarks" translatable="true">Сохраненные остановки</string>
+
+    <string name="bookmark_delete_message" translatable="true">Удалить выбранную закладку?</string>
+    <string name="bookmark_delete_ok" translatable="true">Удалить</string>
+    <string name="bookmark_delete_cancel" translatable="true">@android:string/cancel</string>
+
+    <string-array name="bookmarks_dialog_actions" translatable="true">
+        <item>Переименовать остановку</item>
+        <item>Удалить остановку</item>
+    </string-array>
+
+    <string name="bookmark_dialog_rename_title" translatable="true">Переименовать закладку</string>
+    <string name="bookmark_dialog_rename_hint" translatable="true">Название остановки</string>
+    <string name="bookmark_dialog_rename_ok" translatable="true">Переименовать</string>
+    <string name="bookmark_dialog_rename_cancel" translatable="true">@android:string/cancel</string>
+
+</resources>
