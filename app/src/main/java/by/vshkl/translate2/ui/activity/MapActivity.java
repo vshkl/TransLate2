@@ -217,7 +217,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onSearchTextChanged(String oldQuery, String newQuery) {
-        if (!oldQuery.equals("") && newQuery.equals("")) {
+        if (!oldQuery.isEmpty() && newQuery.isEmpty()) {
             svSearch.clearSuggestions();
         }
         if (newQuery.length() > 2) {

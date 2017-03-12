@@ -1,6 +1,7 @@
 package by.vshkl.translate2.mvp.model;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
@@ -13,6 +14,14 @@ public class Stop implements SearchSuggestion {
     private int bearing;
 
     public Stop() {
+    }
+
+    private Stop(Parcel parcel) {
+        id = parcel.readInt();
+        name = parcel.readString();
+        latitude = parcel.readFloat();
+        longitude = parcel.readFloat();
+        bearing = parcel.readInt();
     }
 
     public int getId() {
@@ -92,7 +101,23 @@ public class Stop implements SearchSuggestion {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeInt(id);
+        parcel.writeString(name);
+        parcel.writeFloat(latitude);
+        parcel.writeFloat(longitude);
+        parcel.writeInt(bearing);
     }
+
+    public static final Parcelable.Creator<Stop> CREATOR = new Parcelable.Creator<Stop>() {
+        @Override
+        public Stop createFromParcel(Parcel parcel) {
+            return new Stop(parcel);
+        }
+
+        @Override
+        public Stop[] newArray(int size) {
+            return new Stop[0];
+        }
+    };
 }

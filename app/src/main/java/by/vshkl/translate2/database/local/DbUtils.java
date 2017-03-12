@@ -18,6 +18,9 @@ import io.reactivex.Observable;
 
 public class DbUtils {
 
+    private static final String WHERE_ID = "Id = ?";
+    private static final String WHERE_NAME = "Name = ?";
+
     public static Observable<Boolean> isOutdatedOrNotExists(final long updatedTimestamp) {
         return Observable.create(emitter -> {
             UpdatedEntity updatedEntity = new Select()
@@ -68,25 +71,25 @@ public class DbUtils {
             stopBookmark.setId(stop.getId());
             stopBookmark.setName(stop.getName());
             StopBookmarkEntityTransformer.transform(stopBookmark).save();
-            emitter.onNext(new Select().from(StopBookmarkEntity.class).where("Id = ?", stop.getId()).exists());
+            emitter.onNext(new Select().from(StopBookmarkEntity.class).where(WHERE_ID, stop.getId()).exists());
         });
     }
 
     public static Observable<Boolean> removeStopBookmark(final Stop stop) {
         return Observable.create(emitter -> {
-            new Delete().from(StopBookmarkEntity.class).where("Id = ?", stop.getId()).execute();
-            emitter.onNext(new Select().from(StopBookmarkEntity.class).where("Id = ?", stop.getId()).exists());
+            new Delete().from(StopBookmarkEntity.class).where(WHERE_ID, stop.getId()).execute();
+            emitter.onNext(new Select().from(StopBookmarkEntity.class).where(WHERE_ID, stop.getId()).exists());
         });
     }
 
     public static Observable<Boolean> renameStopBookmark(final int stopId, final String newStopName) {
         return Observable.create(emitter -> {
-            StopBookmarkEntity stop = new Select().from(StopBookmarkEntity.class).where("Id = ?", stopId).executeSingle();
+            StopBookmarkEntity stop = new Select().from(StopBookmarkEntity.class).where(WHERE_ID, stopId).executeSingle();
             if (stop != null) {
                 stop.name = newStopName;
                 stop.save();
             }
-            emitter.onNext(new Select().from(StopBookmarkEntity.class).where("Name = ?", newStopName).exists());
+            emitter.onNext(new Select().from(StopBookmarkEntity.class).where(WHERE_NAME, newStopName).exists());
         });
     }
 }

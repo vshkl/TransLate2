@@ -1,9 +1,5 @@
 package by.vshkl.translate2.mvp.model;
 
-/**
- * Created by jgug on 11.3.17.
- */
-
 public class StopBookmark {
 
     private int id;

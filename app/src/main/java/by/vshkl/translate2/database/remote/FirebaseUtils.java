@@ -15,10 +15,13 @@ import io.reactivex.Observable;
 
 public class FirebaseUtils {
 
+    private static final String REF_UPDATED = "updated";
+    private static final String REF_STOPS = "stops";
+
     public static Observable<Updated> getUpdatedTimestamp() {
         return Observable.create(emitter -> {
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference reference = database.getReference("updated");
+            DatabaseReference reference = database.getReference(REF_UPDATED);
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -28,7 +31,6 @@ public class FirebaseUtils {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
         });
@@ -37,20 +39,17 @@ public class FirebaseUtils {
     public static Observable<List<Stop>> getAllStops() {
         return Observable.create(emitter -> {
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference reference = database.getReference("stops");
+            DatabaseReference reference = database.getReference(REF_STOPS);
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<Stop> stopList = new ArrayList<>();
-                    for (DataSnapshot stopSnapshot : dataSnapshot.getChildren()) {
-                        stopList.add(stopSnapshot.getValue(Stop.class));
-                    }
+                    dataSnapshot.getChildren().forEach(stopSnapshot -> stopList.add(stopSnapshot.getValue(Stop.class)));
                     emitter.onNext(stopList);
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
         });

@@ -1,7 +1,6 @@
 package by.vshkl.translate2.util;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 
 import com.afollestad.materialdialogs.MaterialDialog;
