@@ -11,3 +11,4 @@ Android app realtime tracking transport arrival for Minsk. Based on infrormation
 ![Stop details](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_3.png "Stop details")
 ![Stop bookmarks](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_4.png "Stop bookmarks")
 ![Stop search](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_5.png "Stop search")
+![Settings](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_6.png "Settings")
