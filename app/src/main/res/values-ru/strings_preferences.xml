@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Language -->
+
+    <string name="pref_language_title" translatable="true">Язык</string>
+    <string name="pref_language_summary" translatable="true">Выдерите язык</string>
+
+    <string-array name="pref_language_entries" translatable="true">
+        <item>Английский</item>
+        <item>Русский</item>
+        <item>Белорусский</item>
+    </string-array>
+
+</resources>

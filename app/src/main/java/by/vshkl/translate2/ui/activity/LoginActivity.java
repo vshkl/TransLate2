@@ -20,6 +20,7 @@ import by.vshkl.translate2.App;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.presenter.LoginPresenter;
 import by.vshkl.translate2.mvp.view.LoginView;
+import by.vshkl.translate2.util.LocaleUtils;
 
 public class LoginActivity extends MvpAppCompatActivity implements LoginView {
 
@@ -35,6 +36,7 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        LocaleUtils.setLocale(getBaseContext());
         initializeWebView();
     }
 

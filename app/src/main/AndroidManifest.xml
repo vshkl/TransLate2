@@ -34,13 +34,20 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name="by.vshkl.translate2.ui.activity.LoginActivity"
             android:theme="@style/AppTheme"/>
+
         <activity
             android:name="by.vshkl.translate2.ui.activity.MapActivity"
             android:hardwareAccelerated="true"
             android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name="by.vshkl.translate2.ui.activity.SettingsActivity"
+            android:theme="@style/SettingsTheme"/>
+
     </application>
 
 </manifest>

@@ -11,7 +11,7 @@
     <string name="map_permission_rationale_allow" translatable="true">Разрешить</string>
     <string name="map_permission_rationale_deny" translatable="true">Отказать</string>
     <string name="map_permission_denied_message" translatable="true">Отказано в определении местоположения.</string>
-    <string name="map_permission_denied_settings" translatable="true">Настройки</string>
+    <string name="settings" translatable="true">Настройки</string>
 
     <string name="map_location_message" translatable="true">Для продолжения необходимо включить службу определения местоположения.</string>
     <string name="map_location_ok" translatable="true">Включить</string>

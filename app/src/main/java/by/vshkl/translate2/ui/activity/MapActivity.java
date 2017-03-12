@@ -16,6 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -32,6 +33,7 @@ import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.FloatingSearchView.OnFocusChangeListener;
+import com.arlib.floatingsearchview.FloatingSearchView.OnMenuItemClickListener;
 import com.arlib.floatingsearchview.FloatingSearchView.OnQueryChangeListener;
 import com.arlib.floatingsearchview.FloatingSearchView.OnSearchListener;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter.OnBindSuggestionCallback;
@@ -75,6 +77,7 @@ import by.vshkl.translate2.mvp.view.MapView;
 import by.vshkl.translate2.ui.StopBookmarkListener;
 import by.vshkl.translate2.util.CookieUtils;
 import by.vshkl.translate2.util.DialogUtils;
+import by.vshkl.translate2.util.LocaleUtils;
 import by.vshkl.translate2.util.Navigation;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -85,7 +88,8 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
         OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
-        OnFocusChangeListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener, StopBookmarkListener {
+        OnFocusChangeListener, OnMenuItemClickListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener,
+        StopBookmarkListener {
 
     private static final float ZOOM_CITY = 11F;
     private static final float ZOOM_OVERVIEW = 15F;
@@ -116,6 +120,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(this);
+        LocaleUtils.setLocale(getBaseContext());
         initializeGoogleMap();
         initializeBottomSheet();
         initializeGoogleApiClient();
@@ -256,6 +261,15 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
+    public void onActionMenuItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Navigation.navigateToSettings(this);
+                break;
+        }
+    }
+
+    @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
         presenter.getStopById((int) drawerItem.getIdentifier());
         return false;
@@ -386,7 +400,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
         Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
-                .setAction(R.string.map_permission_denied_settings, view -> Navigation.navigateToAppSettings(this))
+                .setAction(R.string.settings, view -> Navigation.navigateToAppSettings(this))
                 .show();
     }
 
@@ -442,10 +456,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     private void initializeSearchView() {
+        svSearch.setSearchHint(getString(R.string.search_view_hint));
         svSearch.setOnQueryChangeListener(this);
         svSearch.setOnSearchListener(this);
         svSearch.setOnBindSuggestionCallback(this);
         svSearch.setOnFocusChangeListener(this);
+        svSearch.setOnMenuItemClickListener(this);
         svSearch.attachNavigationDrawerToMenuButton(ndStopBookmarks.getDrawerLayout());
     }
 

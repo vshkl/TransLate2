@@ -8,6 +8,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import by.vshkl.translate2.App;
 import by.vshkl.translate2.mvp.presenter.SplashScreenPresenter;
 import by.vshkl.translate2.mvp.view.SplashScreenView;
+import by.vshkl.translate2.util.LocaleUtils;
 import by.vshkl.translate2.util.Navigation;
 
 public class SplashScreenActivity extends MvpAppCompatActivity implements SplashScreenView {
@@ -17,6 +18,7 @@ public class SplashScreenActivity extends MvpAppCompatActivity implements Splash
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleUtils.setLocaleSettings(getBaseContext());
         presenter.checkLoggedIn(getApplicationContext());
     }
 

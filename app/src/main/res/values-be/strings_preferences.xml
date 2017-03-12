@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Language -->
+
+    <string name="pref_language_title" translatable="true">Мова</string>
+    <string name="pref_language_summary" translatable="true">Абярыце мову</string>
+
+    <string-array name="pref_language_entries" translatable="true">
+        <item>Англійская</item>
+        <item>Руская</item>
+        <item>Беларуская</item>
+    </string-array>
+
+</resources>
