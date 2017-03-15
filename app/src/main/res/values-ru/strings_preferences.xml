@@ -3,6 +3,8 @@
 
     <!-- Language -->
 
+    <string name="pref_category_language" translatable="true">Язык</string>
+
     <string name="pref_language_title" translatable="true">Язык</string>
     <string name="pref_language_summary" translatable="true">Выберите язык</string>
 
@@ -11,5 +13,13 @@
         <item>Русский</item>
         <item>Белорусский</item>
     </string-array>
+
+    <!-- Behaviour -->
+
+    <string name="pref_category_behaviour" translatable="true">Поведение</string>
+
+    <string name="pref_nav_stop_open_title" translatable="true">Расписание</string>
+    <string name="pref_nav_stop_open_summary_on" translatable="true">Показывать расписание в развернутом состоянии</string>
+    <string name="pref_nav_stop_open_summary_off" translatable="true">Показывать расписание в свернутом состоянии</string>
 
 </resources>
