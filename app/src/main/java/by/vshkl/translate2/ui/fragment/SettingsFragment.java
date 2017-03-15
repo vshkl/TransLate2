@@ -29,7 +29,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        sharedPreferences.edit().putBoolean(getString(R.string.pref_key_custom_locale), true).apply();
-        Navigation.restartApp(getActivity().getBaseContext());
+        if (key.equals(getString(R.string.pref_language_key))) {
+            sharedPreferences.edit().putBoolean(getString(R.string.pref_key_custom_locale), true).apply();
+            Navigation.restartApp(getActivity().getBaseContext());
+        }
     }
 }

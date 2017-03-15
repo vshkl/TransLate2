@@ -20,7 +20,7 @@ public interface MapView extends MvpView {
 
     void placeMarkers(List<Stop> stopList);
 
-    void showSelectedStop(Stop stop, boolean bookmarked);
+    void showSelectedStop(Stop stop, boolean bookmarked, boolean fromNavDrawer);
 
     void showSearchResult(List<Stop> stopList);
 

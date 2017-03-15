@@ -2,6 +2,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
+    <PreferenceCategory
+        android:title="@string/pref_category_language"
+        />
+
     <ListPreference
         android:defaultValue="@string/pref_language_default"
         android:dialogTitle="@string/pref_language_title"
@@ -10,6 +14,18 @@
         android:key="@string/pref_language_key"
         android:summary="@string/pref_language_summary"
         android:title="@string/pref_language_title"
+        />
+
+    <PreferenceCategory
+        android:title="@string/pref_category_behaviour"
+        />
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_nav_stop_open_key"
+        android:summaryOff="@string/pref_nav_stop_open_summary_off"
+        android:summaryOn="@string/pref_nav_stop_open_summary_on"
+        android:title="@string/pref_nav_stop_open_title"
         />
 
 </PreferenceScreen>

@@ -3,6 +3,8 @@
 
     <!-- Language -->
 
+    <string name="pref_category_language" translatable="true">Мова</string>
+
     <string name="pref_language_title" translatable="true">Мова</string>
     <string name="pref_language_summary" translatable="true">Абярыце мову</string>
 
@@ -11,5 +13,13 @@
         <item>Руская</item>
         <item>Беларуская</item>
     </string-array>
+
+    <!-- Behaviour -->
+
+    <string name="pref_category_behaviour" translatable="true">Паводзіны</string>
+
+    <string name="pref_nav_stop_open_title" translatable="true">Расклад</string>
+    <string name="pref_nav_stop_open_summary_on" translatable="true">Паказваць расклад у разгорнутым стане</string>
+    <string name="pref_nav_stop_open_summary_off" translatable="true">Паказваць расклад у згорнутым стане</string>
 
 </resources>

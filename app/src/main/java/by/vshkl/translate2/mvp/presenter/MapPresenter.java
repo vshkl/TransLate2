@@ -85,12 +85,15 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 });
     }
 
-    public void getStopById(final int stopId) {
+    public void getStopById(final int stopId, final boolean fromNavDrawer) {
         selectedStopId = stopId;
         if (stopList != null && stopBookmarkList != null) {
             for (Stop stop : stopList) {
                 if (stop.getId() == stopId) {
-                    getViewState().showSelectedStop(stop, isStopBookmarked());
+                    System.out.println();
+                    getViewState().showSelectedStop(stop,
+                            stopBookmarkList.contains(new StopBookmark(stop.getId(), stop.getName())),
+                            fromNavDrawer);
                 }
             }
         }
@@ -176,13 +179,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
                 });
-    }
-
-    private boolean isStopBookmarked() {
-        for (StopBookmark stopBookmark : stopBookmarkList) {
-            return stopBookmark.getId() == selectedStopId;
-        }
-        return false;
     }
 
     private void placeMarkers() {

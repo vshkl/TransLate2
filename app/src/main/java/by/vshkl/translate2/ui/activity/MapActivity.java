@@ -45,12 +45,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mikepenz.materialdrawer.Drawer;
@@ -79,6 +81,7 @@ import by.vshkl.translate2.util.CookieUtils;
 import by.vshkl.translate2.util.DialogUtils;
 import by.vshkl.translate2.util.LocaleUtils;
 import by.vshkl.translate2.util.Navigation;
+import by.vshkl.translate2.util.PreferenceUtils;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
@@ -215,8 +218,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (visibleMarkers.containsValue(markerWrapper)) {
             for (Integer key : visibleMarkers.keySet()) {
                 if (visibleMarkers.get(key).equals(markerWrapper)) {
-                    presenter.getStopById(key);
-                    highlightSelectedMarker(key);
+                    presenter.getStopById(key, false);
                 }
             }
         }
@@ -274,7 +276,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-        presenter.getStopById((int) drawerItem.getIdentifier());
+        presenter.getStopById((int) drawerItem.getIdentifier(), true);
         return false;
     }
 
@@ -339,17 +341,17 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void showSelectedStop(final Stop stop, final boolean bookmarked) {
+    public void showSelectedStop(final Stop stop, final boolean bookmarked, final boolean fromNavDrawer) {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(stop.getLatitude(), stop.getLongitude()), ZOOM_POSITION),
                 new GoogleMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
-                        moveToAndshowSelectedStop(stop, bookmarked);
+                        moveToAndShowSelectedStop(stop, bookmarked, fromNavDrawer);
                     }
 
                     @Override
                     public void onCancel() {
-                        moveToAndshowSelectedStop(stop, bookmarked);
+                        moveToAndShowSelectedStop(stop, bookmarked, fromNavDrawer);
                     }
                 });
     }
@@ -544,18 +546,26 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
     }
 
-    private void moveToAndshowSelectedStop(final Stop stop, final boolean bookmarked) {
+    private void moveToAndShowSelectedStop(final Stop stop, final boolean bookmarked, final boolean fromNavDrawer) {
         highlightSelectedMarker(stop.getId());
         tvStopName.setText(stop.getName());
         cbBookmark.setChecked(bookmarked);
         loadWebView(URL_DASHBOARD + stop.getId());
-        fabLocation.hide(new FloatingActionButton.OnVisibilityChangedListener() {
-            @Override
-            public void onHidden(FloatingActionButton fab) {
-                super.onHidden(fab);
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        });
+        boolean shouldShowExpanded = fromNavDrawer
+                && PreferenceUtils.getScheduleBehaviour(MapActivity.this.getApplicationContext());
+        if (fabLocation.isShown()) {
+            fabLocation.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+                @Override
+                public void onHidden(FloatingActionButton fab) {
+                    super.onHidden(fab);
+                    bottomSheetBehavior.setState(shouldShowExpanded
+                            ? BottomSheetBehavior.STATE_EXPANDED
+                            : BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            });
+        } else if (shouldShowExpanded) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
     }
 
     private void dropMarkerHighlight(float zoom) {
