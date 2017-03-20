@@ -6,9 +6,11 @@
 
 ## Screenshots
 
-![Map](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_1.png "Map")
-![Stop preview](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_2.png "Stop preview")
-![Stop details](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_3.png "Stop details")
-![Stop bookmarks](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_4.png "Stop bookmarks")
-![Stop search](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_5.png "Stop search")
-![Settings](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_6.png "Settings")
+<div style="display:flex;" >
+<img src="https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_1.png" width="16%" >
+<img style="margin-left:10px;" src="https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_2.png" width="16%" >
+<img style="margin-left:10px;" src="https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_3.png" width="16%" >
+<img style="margin-left:10px;" src="https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_4.png" width="16%" >
+<img style="margin-left:10px;" src="https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_5.png" width="16%" >
+<img style="margin-left:10px;" src="https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_6.png" width="16%" >
+</div>
