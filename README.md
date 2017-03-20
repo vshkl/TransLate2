@@ -4,7 +4,7 @@
 
 <br>Android app for realtime tracking transport arrival for Minsk. Based on infrormation from [minsktrans.by](http://www.minsktrans.by).<br><br><br>
 
-### Screenshots ###
+## Screenshots
 
 ![Map](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_1.png "Map")
 ![Stop preview](https://github.com/vshkl/TransLate2/blob/master/screenshots/screenshot_2.png "Stop preview")
