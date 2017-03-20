@@ -1,8 +1,8 @@
 # TransLate2 #
 
-### Description ###
+<img src="https://github.com/vshkl/TransLate2/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" align="left" width="100" hspace="10" vspace="10">
 
-Android app realtime tracking transport arrival for Minsk. Based on infrormation from [minsktrans.by](http://www.minsktrans.by).
+<br>Android app for realtime tracking transport arrival for Minsk. Based on infrormation from [minsktrans.by](http://www.minsktrans.by).<br><br><br>
 
 ### Screenshots ###
 
