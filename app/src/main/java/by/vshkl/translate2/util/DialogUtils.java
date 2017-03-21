@@ -37,13 +37,10 @@ public class DialogUtils {
                 .items(R.array.bookmarks_dialog_actions)
                 .itemsColorRes(R.color.colorPrimaryText)
                 .itemsCallback((dialog, itemView, position, text) -> {
-                    switch (position) {
-                        case 0:
-                            listener.onEditBookmark();
-                            break;
-                        case 1:
-                            listener.onDeleteBookmark();
-                            break;
+                    if (position == 0) {
+                        listener.onEditBookmark();
+                    } else if (position == 1) {
+                        listener.onDeleteBookmark();
                     }
                 })
                 .show();
@@ -69,7 +66,7 @@ public class DialogUtils {
                         (dialog, input) -> {
                         })
                 .onPositive(
-                        (dialog, which) -> listener.OnRenameConfirmed(dialog.getInputEditText().getText().toString()))
+                        (dialog, which) -> listener.onRenameConfirmed(dialog.getInputEditText().getText().toString()))
                 .show();
     }
 }

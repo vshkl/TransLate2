@@ -13,9 +13,6 @@ public class Stop implements SearchSuggestion {
     private float longitude;
     private int bearing;
 
-    public Stop() {
-    }
-
     private Stop(Parcel parcel) {
         id = parcel.readInt();
         name = parcel.readString();

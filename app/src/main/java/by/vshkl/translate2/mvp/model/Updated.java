@@ -4,9 +4,6 @@ public class Updated {
 
     private long updatedTimestamp;
 
-    public Updated() {
-    }
-
     public long getUpdatedTimestamp() {
         return updatedTimestamp;
     }

@@ -45,14 +45,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mikepenz.materialdrawer.Drawer;
@@ -163,6 +161,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 break;
             default:
                 super.onBackPressed();
+                break;
         }
     }
 
@@ -192,7 +191,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
@@ -267,10 +265,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onActionMenuItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Navigation.navigateToSettings(this);
-                break;
+        if (item.getItemId() == R.id.action_settings) {
+            Navigation.navigateToSettings(this);
         }
     }
 
@@ -303,7 +299,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void OnRenameConfirmed(String newStopName) {
+    public void onRenameConfirmed(String newStopName) {
         presenter.renameStopBookmark(newStopName);
     }
 
@@ -444,7 +440,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
             }
         });
         initializeWebView();

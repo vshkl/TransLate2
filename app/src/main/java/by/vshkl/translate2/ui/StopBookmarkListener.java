@@ -8,5 +8,5 @@ public interface StopBookmarkListener {
 
     void onDeleteConfirmed();
 
-    void OnRenameConfirmed(String newStopName);
+    void onRenameConfirmed(String newStopName);
 }

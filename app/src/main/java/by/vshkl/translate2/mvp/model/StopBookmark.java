@@ -5,9 +5,6 @@ public class StopBookmark {
     private int id;
     private String name;
 
-    public StopBookmark() {
-    }
-
     public StopBookmark(int id, String name) {
         this.id = id;
         this.name = name;

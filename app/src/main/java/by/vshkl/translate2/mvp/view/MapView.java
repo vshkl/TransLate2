@@ -1,7 +1,6 @@
 package by.vshkl.translate2.mvp.view;
 
 import com.arellomobile.mvp.MvpView;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
