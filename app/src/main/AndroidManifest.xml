@@ -41,6 +41,7 @@
 
         <activity
             android:name="by.vshkl.translate2.ui.activity.MapActivity"
+            android:screenOrientation="portrait"
             android:hardwareAccelerated="true"
             android:theme="@style/AppTheme"/>
 
