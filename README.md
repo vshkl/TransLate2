@@ -2,7 +2,8 @@
 
 <img src="https://github.com/vshkl/TransLate2/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" align="left" width="100" hspace="10" vspace="10">
 
-<br>Android app for realtime tracking transport arrival for Minsk. Based on infrormation from [minsktrans.by](http://www.minsktrans.by).<br><br><br>
+<br>Android app for realtime tracking transport arrival for Minsk. Based on infrormation from [minsktrans.by](http://www.minsktrans.by).<br>
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/edf3ac18b9b944458f87b7f28a13df6e)](https://www.codacy.com/app/jgugn1/TransLate2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=vshkl/TransLate2&amp;utm_campaign=Badge_Grade)
 
 ## Screenshots
 
