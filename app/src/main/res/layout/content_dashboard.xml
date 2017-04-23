@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:clipToPadding="true"
+    >
+
+    <WebView
+        android:id="@+id/wv_dashboard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-40dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_stop_name"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorBackground"
+        android:gravity="center_vertical"
+        android:paddingEnd="56dp"
+        android:paddingStart="56dp"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="20sp"
+        />
+
+    <ImageView
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:padding="16dp"
+        app:srcCompat="@drawable/ic_stop"
+        tools:ignore="ContentDescription"
+        />
+
+    <CheckBox
+        android:id="@+id/cb_bookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:layout_gravity="end"
+        android:button="@drawable/check_box_bookmark"
+        android:paddingEnd="16dp"
+        tools:ignore="RtlSymmetry"
+        />
+
+</FrameLayout>
