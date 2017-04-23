@@ -20,12 +20,10 @@ import by.vshkl.translate2.App;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.presenter.LoginPresenter;
 import by.vshkl.translate2.mvp.view.LoginView;
+import by.vshkl.translate2.util.Constants;
 import by.vshkl.translate2.util.LocaleUtils;
 
 public class LoginActivity extends MvpAppCompatActivity implements LoginView {
-
-    private static final String URL_LOGGED = "http://www.minsktrans.by/lookout_yard/";
-    private static final String URL_LOGIN = "http://www.minsktrans.by/lookout_yard/Account/Login";
 
     @BindView(R.id.wv_login) WebView wvLogin;
 
@@ -56,7 +54,7 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
         wvLogin.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.equals(URL_LOGGED)) {
+                if (url.equals(Constants.URL_LOGGED)) {
                     presenter.saveCookies(getApplicationContext(), CookieManager.getInstance().getCookie(url));
                     startActivity(MapActivity.newIntent(LoginActivity.this));
                     finish();
@@ -67,7 +65,7 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                if (request.getUrl().toString().equals(URL_LOGGED)) {
+                if (request.getUrl().toString().equals(Constants.URL_LOGGED)) {
                     presenter.saveCookies(getApplicationContext(),
                             CookieManager.getInstance().getCookie(request.getUrl().toString()));
                     startActivity(MapActivity.newIntent(LoginActivity.this));
@@ -77,6 +75,6 @@ public class LoginActivity extends MvpAppCompatActivity implements LoginView {
             }
         });
         wvLogin.setWebChromeClient(new WebChromeClient());
-        wvLogin.loadUrl(URL_LOGIN);
+        wvLogin.loadUrl(Constants.URL_LOGIN);
     }
 }

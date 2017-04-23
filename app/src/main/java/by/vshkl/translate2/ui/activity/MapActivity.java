@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.PresenterType;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.FloatingSearchView.OnFocusChangeListener;
 import com.arlib.floatingsearchview.FloatingSearchView.OnMenuItemClickListener;
@@ -61,7 +62,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -75,6 +75,7 @@ import by.vshkl.translate2.mvp.model.StopBookmark;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
 import by.vshkl.translate2.ui.StopBookmarkListener;
+import by.vshkl.translate2.util.Constants;
 import by.vshkl.translate2.util.CookieUtils;
 import by.vshkl.translate2.util.DialogUtils;
 import by.vshkl.translate2.util.LocaleUtils;
@@ -92,13 +93,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         OnFocusChangeListener, OnMenuItemClickListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener,
         StopBookmarkListener {
 
-    private static final float ZOOM_CITY = 11F;
-    private static final float ZOOM_OVERVIEW = 15F;
-    private static final float ZOOM_POSITION = 16F;
-    private static final double DEFAULT_LATITUDE = 53.9024429;
-    private static final double DEFAULT_LONGITUDE = 27.5614649;
-    private static final String URL_DASHBOARD = "http://www.minsktrans.by/lookout_yard/Home/Index/minsk?stopsearch&s=";
-
     @BindView(R.id.root) CoordinatorLayout clRoot;
     @BindView(R.id.sv_search) FloatingSearchView svSearch;
     @BindView(R.id.fl_bottom_sheet) FrameLayout flBottomSheet;
@@ -108,10 +102,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @BindView(R.id.pb_loading) ProgressBar pbLoading;
     @BindView(R.id.cb_bookmark) CheckBox cbBookmark;
 
-    @InjectPresenter MapPresenter presenter;
+    @InjectPresenter(type = PresenterType.LOCAL) MapPresenter presenter;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
-    private HashMap<Integer, MarkerWrapper> visibleMarkers;
     private BottomSheetBehavior bottomSheetBehavior;
     private Drawer ndStopBookmarks;
     private boolean firstConnect = true;
@@ -143,6 +136,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     protected void onDestroy() {
+        presenter.onDestroy();
         super.onDestroy();
         App.getRefWatcher(this).watch(this);
     }
@@ -212,14 +206,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        MarkerWrapper markerWrapper = new MarkerWrapper(marker);
-        if (visibleMarkers.containsValue(markerWrapper)) {
-            for (Integer key : visibleMarkers.keySet()) {
-                if (visibleMarkers.get(key).equals(markerWrapper)) {
-                    presenter.getStopById(key, false);
-                }
-            }
-        }
+        presenter.onMarkerClicked(new MarkerWrapper(marker));
         return false;
     }
 
@@ -243,7 +230,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
         Stop stop = (Stop) searchSuggestion;
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(stop.getLatitude(), stop.getLongitude()), ZOOM_POSITION));
+                new LatLng(stop.getLatitude(), stop.getLongitude()), Constants.ZOOM_POSITION));
     }
 
     @Override
@@ -331,14 +318,13 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void placeMarkers(final List<Stop> stopList) {
         if (map != null) {
-            visibleMarkers = new HashMap<>();
             map.setOnCameraMoveListener(() -> addItemsToMap(stopList, map.getCameraPosition().zoom));
         }
     }
 
     @Override
     public void showSelectedStop(final Stop stop, final boolean bookmarked, final boolean fromNavDrawer) {
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(stop.getLatitude(), stop.getLongitude()), ZOOM_POSITION),
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(stop.getLatitude(), stop.getLongitude()), Constants.ZOOM_POSITION),
                 new GoogleMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
@@ -482,7 +468,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         settings.setMyLocationButtonEnabled(false);
         settings.setMapToolbarEnabled(false);
         map.setBuildingsEnabled(true);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), ZOOM_CITY));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(Constants.DEFAULT_LATITUDE, Constants.DEFAULT_LONGITUDE), Constants.ZOOM_CITY));
         map.setOnMapClickListener(this);
         map.setOnMarkerClickListener(this);
     }
@@ -498,7 +485,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_POSITION));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants.ZOOM_POSITION));
         }
     }
 
@@ -510,42 +497,42 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     private void addItemsToMap(final List<Stop> stopList, float zoom) {
         LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
+        LatLng latLng;
+        int stopId;
+
         for (Stop stop : stopList) {
-            int stopId = stop.getId();
-            LatLng latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
-            if (zoom >= ZOOM_OVERVIEW) {
+            stopId = stop.getId();
+            latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
+            if (zoom >= Constants.ZOOM_OVERVIEW) {
                 if (latLngBounds.contains(latLng)) {
-                    if (!visibleMarkers.containsKey(stopId)) {
+                    if (!presenter.containsMarker(stopId)) {
                         MarkerWrapper marker = new MarkerWrapper(map.addMarker(new MarkerOptions()
                                 .position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place))));
-                        visibleMarkers.put(stopId, marker);
+                        presenter.addVisibleMarker(stopId, marker);
                     }
-                } else if (visibleMarkers.containsKey(stopId) && !visibleMarkers.get(stopId).isSelected()) {
-                    visibleMarkers.get(stopId).getMarker().remove();
-                    visibleMarkers.remove(stopId);
+                } else if (presenter.containsMarker(stopId) && !presenter.isMarkerSelected(stopId)) {
+                    presenter.removeVisibleMarker(stopId);
                 }
-            } else if (visibleMarkers.containsKey(stopId) && !visibleMarkers.get(stopId).isSelected()) {
-                visibleMarkers.get(stopId).getMarker().remove();
-                visibleMarkers.remove(stopId);
+            } else if (presenter.containsMarker(stopId) && !presenter.isMarkerSelected(stopId)) {
+                presenter.removeVisibleMarker(stopId);
             }
         }
     }
 
     private void highlightSelectedMarker(Integer key) {
         float zoom = map.getCameraPosition().zoom;
-        if (zoom < ZOOM_OVERVIEW) {
+        if (zoom < Constants.ZOOM_OVERVIEW) {
             return;
         }
         dropMarkerHighlight(zoom);
-        visibleMarkers.get(key).setSelected(true);
-        visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
+        presenter.selectMarker(key);
     }
 
     private void moveToAndShowSelectedStop(final Stop stop, final boolean bookmarked, final boolean fromNavDrawer) {
         highlightSelectedMarker(stop.getId());
         tvStopName.setText(stop.getName());
         cbBookmark.setChecked(bookmarked);
-        loadWebView(URL_DASHBOARD + stop.getId());
+        loadWebView(Constants.URL_DASHBOARD + stop.getId());
         boolean shouldShowExpanded = fromNavDrawer
                 && PreferenceUtils.getScheduleBehaviour(MapActivity.this.getApplicationContext());
         if (fabLocation.isShown()) {
@@ -564,17 +551,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     private void dropMarkerHighlight(float zoom) {
-        if (zoom < ZOOM_OVERVIEW) {
-            for (Integer key : visibleMarkers.keySet()) {
-                visibleMarkers.get(key).getMarker().remove();
-                visibleMarkers.remove(key);
-            }
-        }
-        for (Integer key : visibleMarkers.keySet()) {
-            if (visibleMarkers.get(key).isSelected()) {
-                visibleMarkers.get(key).setSelected(false);
-                visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
-            }
-        }
+        presenter.dropMarkerHighlight(zoom, Constants.ZOOM_OVERVIEW);
     }
 }

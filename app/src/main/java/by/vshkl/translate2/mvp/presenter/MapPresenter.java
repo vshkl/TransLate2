@@ -1,7 +1,10 @@
 package by.vshkl.translate2.mvp.presenter;
 
+import android.annotation.SuppressLint;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +14,7 @@ import java.util.Map;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.DbUtils;
 import by.vshkl.translate2.database.remote.FirebaseUtils;
+import by.vshkl.translate2.mvp.model.MarkerWrapper;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
 import by.vshkl.translate2.mvp.model.transformer.StopBookmarkTransformer;
@@ -26,6 +30,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     private Disposable disposable;
     private List<Stop> stopList;
     private List<StopBookmark> stopBookmarkList;
+    private HashMap<Integer, MarkerWrapper> visibleMarkers;
     private long updatedTimestamp;
     private int selectedStopId;
 
@@ -35,20 +40,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
             disposable.dispose();
         }
         super.onDestroy();
-    }
-
-    public void setSelectedStopId(int selectedStopId) {
-        this.selectedStopId = selectedStopId;
-    }
-
-    public String getSelectedStopBookmarkName() {
-        String stopBookmarkName = "";
-        for (StopBookmark stopBookmark : stopBookmarkList) {
-            if (stopBookmark.getId() == selectedStopId) {
-                stopBookmarkName = stopBookmark.getName();
-            }
-        }
-        return stopBookmarkName;
     }
 
     public void getUpdatedTimestampFromRemoteDatabase() {
@@ -181,12 +172,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 });
     }
 
-    private void placeMarkers() {
-        if (stopList != null) {
-            getViewState().placeMarkers(stopList);
-        }
-    }
-
     private void isOutdatedOrNotExists(final long updatedTimestamp) {
         disposable = DbUtils.isOutdatedOrNotExists(updatedTimestamp)
                 .subscribeOn(Schedulers.io())
@@ -196,5 +181,74 @@ public class MapPresenter extends MvpPresenter<MapView> {
                         getViewState().showUpdateStopsSnackbar();
                     }
                 });
+    }
+
+    public void onMarkerClicked(MarkerWrapper markerWrapper) {
+        if (visibleMarkers.containsValue(markerWrapper)) {
+            for (Integer key : visibleMarkers.keySet()) {
+                if (visibleMarkers.get(key).equals(markerWrapper)) {
+                    getStopById(key, false);
+                }
+            }
+        }
+    }
+
+    @SuppressLint("UseSparseArrays")
+    private void placeMarkers() {
+        if (stopList != null) {
+            visibleMarkers = new HashMap<>();
+            getViewState().placeMarkers(stopList);
+        }
+    }
+
+    public void addVisibleMarker(int stopId, MarkerWrapper marker) {
+        visibleMarkers.put(stopId, marker);
+    }
+
+    public void removeVisibleMarker(int stopId) {
+        visibleMarkers.get(stopId).getMarker().remove();
+        visibleMarkers.remove(stopId);
+    }
+
+    public boolean containsMarker(int stopId) {
+        return visibleMarkers.containsKey(stopId);
+    }
+
+    public boolean isMarkerSelected(int stopId) {
+        return visibleMarkers.get(stopId).isSelected();
+    }
+
+    public void selectMarker(int stopId) {
+        visibleMarkers.get(stopId).setSelected(true);
+        visibleMarkers.get(stopId).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_selected));
+    }
+
+    public void dropMarkerHighlight(float currentZoom, float thresholdZoom) {
+        if (currentZoom < thresholdZoom) {
+            for (Integer key : visibleMarkers.keySet()) {
+                visibleMarkers.get(key).getMarker().remove();
+                visibleMarkers.remove(key);
+            }
+        }
+        for (Integer key : visibleMarkers.keySet()) {
+            if (visibleMarkers.get(key).isSelected()) {
+                visibleMarkers.get(key).setSelected(false);
+                visibleMarkers.get(key).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place));
+            }
+        }
+    }
+
+    public void setSelectedStopId(int selectedStopId) {
+        this.selectedStopId = selectedStopId;
+    }
+
+    public String getSelectedStopBookmarkName() {
+        String stopBookmarkName = "";
+        for (StopBookmark stopBookmark : stopBookmarkList) {
+            if (stopBookmark.getId() == selectedStopId) {
+                stopBookmarkName = stopBookmark.getName();
+            }
+        }
+        return stopBookmarkName;
     }
 }
