@@ -24,11 +24,11 @@
         android:layout_height="match_parent"
         app:floatingSearch_close_search_on_keyboard_dismiss="true"
         app:floatingSearch_leftActionMode="showHamburger"
+        app:floatingSearch_menu="@menu/menu_main"
         app:floatingSearch_searchBarMarginLeft="8dp"
         app:floatingSearch_searchBarMarginRight="8dp"
         app:floatingSearch_searchBarMarginTop="8dp"
         app:floatingSearch_showSearchKey="false"
-        app:floatingSearch_menu="@menu/menu_main"
         app:floatingSearch_suggestionsListAnimDuration="250"
         />
 
@@ -44,67 +44,15 @@
         app:srcCompat="@drawable/ic_location"
         />
 
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <include
         android:id="@+id/fl_bottom_sheet"
+        layout="@layout/content_dashboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorBackground"
-        android:clipToPadding="true"
         app:behavior_hideable="true"
         app:behavior_peekHeight="56dp"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-        >
-
-        <WebView
-            android:id="@+id/wv_dashboard"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="-40dp"
-            />
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="4dp"
-            app:contentPadding="-8dp"
-            >
-
-            <TextView
-                android:id="@+id/tv_stop_name"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_gravity="start"
-                android:background="@color/colorBackground"
-                android:gravity="center_vertical"
-                android:paddingEnd="56dp"
-                android:paddingStart="56dp"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp"
-                />
-
-            <ImageView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:padding="16dp"
-                app:srcCompat="@drawable/ic_stop"
-                tools:ignore="ContentDescription"
-                />
-
-            <CheckBox
-                android:id="@+id/cb_bookmark"
-                android:layout_width="wrap_content"
-                android:layout_height="56dp"
-                android:layout_gravity="end"
-                android:button="@drawable/check_box_bookmark"
-                android:paddingEnd="16dp"
-                tools:ignore="RtlSymmetry"
-                />
-
-        </android.support.v7.widget.CardView>
-
-    </FrameLayout>
+        />
 
     <ProgressBar
         android:id="@+id/pb_loading"
