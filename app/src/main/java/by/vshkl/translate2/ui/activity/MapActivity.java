@@ -4,8 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -41,7 +42,11 @@ import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter.OnBindS
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -74,7 +79,7 @@ import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
-import by.vshkl.translate2.ui.StopBookmarkListener;
+import by.vshkl.translate2.ui.listener.StopBookmarkListener;
 import by.vshkl.translate2.util.Constants;
 import by.vshkl.translate2.util.CookieUtils;
 import by.vshkl.translate2.util.DialogUtils;
@@ -93,6 +98,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         OnFocusChangeListener, OnMenuItemClickListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener,
         StopBookmarkListener {
 
+    private static final String TAG = "MapActivity";
+
     @BindView(R.id.root) CoordinatorLayout clRoot;
     @BindView(R.id.sv_search) FloatingSearchView svSearch;
     @BindView(R.id.fl_bottom_sheet) FrameLayout flBottomSheet;
@@ -105,6 +112,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @InjectPresenter(type = PresenterType.LOCAL) MapPresenter presenter;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest = null;
     private BottomSheetBehavior bottomSheetBehavior;
     private Drawer ndStopBookmarks;
     private boolean firstConnect = true;
@@ -377,7 +385,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         if (hasProvider) {
             showUserLocation();
         } else {
-            DialogUtils.showLocationTurnOnDialog(this);
+            turnOnLocation();
         }
     }
 
@@ -459,7 +467,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 .withOnDrawerItemClickListener(this)
                 .withOnDrawerItemLongClickListener(this)
                 .build();
-        presenter.getAllStopBookmarksFromLocalDatabase();   //TODO: Move somewhere else
+        presenter.getAllStopBookmarksFromLocalDatabase();
     }
 
     private void setupMap() {
@@ -481,12 +489,12 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        if (location != null) {
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, getLocationRequest(), location -> {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.setMyLocationEnabled(true);
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants.ZOOM_POSITION));
-        }
+        });
     }
 
     private void loadWebView(String url) {
@@ -552,5 +560,37 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     private void dropMarkerHighlight(float zoom) {
         presenter.dropMarkerHighlight(zoom, Constants.ZOOM_OVERVIEW);
+    }
+
+    private void turnOnLocation() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(getLocationRequest());
+        builder.setAlwaysShow(true);
+
+        LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
+                .setResultCallback(locationResult -> {
+                    final Status status = locationResult.getStatus();
+                    switch (locationResult.getStatus().getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            showUserLocation();
+                            break;
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            try {
+                                status.startResolutionForResult(this, 0x1);
+                            } catch (IntentSender.SendIntentException e) {
+                                Log.d(TAG, e.toString());
+                            }
+                            break;
+                    }
+                });
+    }
+
+    private LocationRequest getLocationRequest() {
+        if (locationRequest == null) {
+            locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setInterval(10000);
+            locationRequest.setFastestInterval(10000 / 2);
+        }
+        return locationRequest;
     }
 }

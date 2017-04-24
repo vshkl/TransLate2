@@ -13,7 +13,6 @@
     <string name="map_permission_denied_message" translatable="true">Отказано в определении местоположения.</string>
     <string name="settings" translatable="true">Настройки</string>
 
-    <string name="map_location_message" translatable="true">Для продолжения необходимо включить службу определения местоположения.</string>
     <string name="map_location_ok" translatable="true">Включить</string>
     <string name="map_location_cancel" translatable="true">@android:string/cancel</string>
 

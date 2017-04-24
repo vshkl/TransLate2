@@ -13,7 +13,6 @@
     <string name="map_permission_denied_message">Адмоўлена у вызначэнні месцазнаходжання.</string>
     <string name="settings" translatable="true">Налады</string>
 
-    <string name="map_location_message" translatable="true">Для працягу неабходна ўключыць службу вызначэння местазнаходжання.</string>
     <string name="map_location_ok" translatable="true">Уключыць</string>
     <string name="map_location_cancel" translatable="true">@android:string/cancel</string>
 

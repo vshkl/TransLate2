@@ -11,7 +11,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.LocalRepository;
-import by.vshkl.translate2.ui.StopBookmarkListener;
+import by.vshkl.translate2.ui.listener.StopBookmarkListener;
 import permissions.dispatcher.PermissionRequest;
 
 public class DialogUtils {
@@ -24,16 +24,6 @@ public class DialogUtils {
                 .negativeText(R.string.map_location_cancel)
                 .onPositive((dialog, which) -> request.proceed())
                 .onNegative(((dialog, which) -> request.cancel()))
-                .show();
-    }
-
-    public static void showLocationTurnOnDialog(Context context) {
-        new MaterialDialog.Builder(context)
-                .title(R.string.map_permission_rationale_title)
-                .content(R.string.map_location_message)
-                .positiveText(R.string.map_location_ok)
-                .negativeText(R.string.map_location_cancel)
-                .onPositive((dialog, which) -> Navigation.navigateToLocationSettings(context))
                 .show();
     }
 
