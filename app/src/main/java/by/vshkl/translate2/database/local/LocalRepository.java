@@ -10,55 +10,47 @@ import java.util.List;
 import by.vshkl.translate2.database.local.entity.StopBookmarkEntity;
 import by.vshkl.translate2.database.local.entity.StopEntity;
 import by.vshkl.translate2.database.local.entity.UpdatedEntity;
-import by.vshkl.translate2.database.local.entity.transformer.StopBookmarkEntityTransformer;
-import by.vshkl.translate2.database.local.entity.transformer.StopEntityTransformer;
+import by.vshkl.translate2.database.local.mapper.StopBookmarkEntityMapper;
+import by.vshkl.translate2.database.local.mapper.StopEntityMapper;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
 import io.reactivex.Observable;
 
-public class DbUtils {
+public class LocalRepository {
 
     private static final String WHERE_ID = "Id = ?";
     private static final String WHERE_NAME = "Name = ?";
 
-    public static Observable<Boolean> isOutdatedOrNotExists(final long updatedTimestamp) {
+    public static Observable<Boolean> isOutdatedOrNotExists(long updatedTimestamp) {
         return Observable.create(emitter -> {
-            UpdatedEntity updatedEntity = new Select()
-                    .from(UpdatedEntity.class)
-                    .executeSingle();
+            UpdatedEntity updatedEntity = new Select().from(UpdatedEntity.class).executeSingle();
             emitter.onNext(updatedEntity == null || updatedTimestamp > updatedEntity.undatedTimestamp);
         });
     }
 
-    public static Observable<List<StopEntity>> getAllStops() {
+    public static Observable<List<StopEntity>> loadStops() {
         return Observable.create(emitter -> {
-            List<StopEntity> stopEntityList = new Select()
-                    .from(StopEntity.class)
-                    .execute();
-            emitter.onNext(stopEntityList != null ? stopEntityList : Collections.emptyList());
+            List<StopEntity> stopEntities = new Select().from(StopEntity.class).execute();
+            emitter.onNext(stopEntities != null ? stopEntities : Collections.emptyList());
         });
     }
 
-    public static Observable<List<StopBookmarkEntity>> getAllStopBookmarks() {
+    public static Observable<List<StopBookmarkEntity>> loadStopBookmarks() {
         return Observable.create(emitter -> {
-            List<StopBookmarkEntity> stopBookmarkEntityList = new Select()
-                    .from(StopBookmarkEntity.class)
-                    .execute();
-            emitter.onNext(stopBookmarkEntityList != null ? stopBookmarkEntityList : Collections.emptyList());
+            List<StopBookmarkEntity> stopBookmarks = new Select().from(StopBookmarkEntity.class).execute();
+            emitter.onNext(stopBookmarks != null ? stopBookmarks : Collections.emptyList());
         });
     }
 
-    public static Observable<Boolean> saveAllStops(final List<Stop> stopList, final long updatedTimestamp) {
+    public static Observable<Boolean> saveAllStops(List<Stop> stops, long updatedTimestamp) {
         return Observable.create(emitter -> {
             ActiveAndroid.beginTransaction();
             try {
-                for (Stop stop : stopList) {
-                    StopEntityTransformer.transform(stop).save();
+                for (Stop stop : stops) {
+                    StopEntityMapper.transform(stop).save();
                 }
                 new Delete().from(UpdatedEntity.class).execute();
-                UpdatedEntity updatedEntity = new UpdatedEntity();
-                updatedEntity.undatedTimestamp = updatedTimestamp;
-                updatedEntity.save();
+                new UpdatedEntity(updatedTimestamp).save();
                 ActiveAndroid.setTransactionSuccessful();
             } finally {
                 ActiveAndroid.endTransaction();
@@ -67,24 +59,24 @@ public class DbUtils {
         });
     }
 
-    public static Observable<Boolean> saveStopBookmark(final Stop stop) {
+    public static Observable<Boolean> saveStopBookmark(Stop stop) {
         return Observable.create(emitter -> {
             StopBookmark stopBookmark = new StopBookmark();
             stopBookmark.setId(stop.getId());
             stopBookmark.setName(stop.getName());
-            StopBookmarkEntityTransformer.transform(stopBookmark).save();
+            StopBookmarkEntityMapper.transform(stopBookmark).save();
             emitter.onNext(new Select().from(StopBookmarkEntity.class).where(WHERE_ID, stop.getId()).exists());
         });
     }
 
-    public static Observable<Boolean> removeStopBookmark(final Stop stop) {
+    public static Observable<Boolean> removeStopBookmark(Stop stop) {
         return Observable.create(emitter -> {
             new Delete().from(StopBookmarkEntity.class).where(WHERE_ID, stop.getId()).execute();
             emitter.onNext(new Select().from(StopBookmarkEntity.class).where(WHERE_ID, stop.getId()).exists());
         });
     }
 
-    public static Observable<Boolean> renameStopBookmark(final int stopId, final String newStopName) {
+    public static Observable<Boolean> renameStopBookmark(int stopId, String newStopName) {
         return Observable.create(emitter -> {
             StopBookmarkEntity stop = new Select().from(StopBookmarkEntity.class).where(WHERE_ID, stopId).executeSingle();
             if (stop != null) {

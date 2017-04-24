@@ -11,7 +11,7 @@ import permissions.dispatcher.PermissionRequest;
 
 public class DialogUtils {
 
-    public static void showLocationRationaleDialog(final Context context, final PermissionRequest request) {
+    public static void showLocationRationaleDialog(Context context, PermissionRequest request) {
         new MaterialDialog.Builder(context)
                 .title(R.string.map_permission_rationale_title)
                 .content(R.string.map_permission_rationale_message)
@@ -22,7 +22,7 @@ public class DialogUtils {
                 .show();
     }
 
-    public static void showLocationTurnOnDialog(final Context context) {
+    public static void showLocationTurnOnDialog(Context context) {
         new MaterialDialog.Builder(context)
                 .title(R.string.map_permission_rationale_title)
                 .content(R.string.map_location_message)
@@ -32,7 +32,7 @@ public class DialogUtils {
                 .show();
     }
 
-    public static void showBookmarkActionsDialog(final Context context, final StopBookmarkListener listener) {
+    public static void showBookmarkActionsDialog(Context context, StopBookmarkListener listener) {
         new MaterialDialog.Builder(context)
                 .items(R.array.bookmarks_dialog_actions)
                 .itemsColorRes(R.color.colorPrimaryText)
@@ -46,7 +46,7 @@ public class DialogUtils {
                 .show();
     }
 
-    public static void showBookmarkDeleteConfirmationDialog(final Context context, final StopBookmarkListener listener) {
+    public static void showBookmarkDeleteConfirmationDialog(Context context, StopBookmarkListener listener) {
         new MaterialDialog.Builder(context)
                 .title(R.string.bookmark_delete_message)
                 .positiveText(R.string.bookmark_delete_ok)
@@ -55,8 +55,7 @@ public class DialogUtils {
                 .show();
     }
 
-    public static void shoeBookmarkRenameDialog(final Context context, final String stopName,
-                                                final StopBookmarkListener listener) {
+    public static void shoeBookmarkRenameDialog(Context context, String stopName, StopBookmarkListener listener) {
         new MaterialDialog.Builder(context)
                 .title(R.string.bookmark_dialog_rename_title)
                 .positiveText(R.string.bookmark_dialog_rename_ok)

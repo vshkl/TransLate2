@@ -13,7 +13,7 @@ import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.Updated;
 import io.reactivex.Observable;
 
-public class FirebaseUtils {
+public class FirebaseRepository {
 
     private static final String REF_UPDATED = "updated";
     private static final String REF_STOPS = "stops";
@@ -43,11 +43,11 @@ public class FirebaseUtils {
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    List<Stop> stopList = new ArrayList<>();
+                    List<Stop> stops = new ArrayList<>();
                     for (DataSnapshot stopSnapshot : dataSnapshot.getChildren()) {
-                        stopList.add(stopSnapshot.getValue(Stop.class));
+                        stops.add(stopSnapshot.getValue(Stop.class));
                     }
-                    emitter.onNext(stopList);
+                    emitter.onNext(stops);
                 }
 
                 @Override

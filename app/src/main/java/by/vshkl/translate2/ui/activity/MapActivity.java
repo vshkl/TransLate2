@@ -316,9 +316,9 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @SuppressLint("UseSparseArrays")
     @Override
-    public void placeMarkers(final List<Stop> stopList) {
+    public void placeMarkers(final List<Stop> stops) {
         if (map != null) {
-            map.setOnCameraMoveListener(() -> addItemsToMap(stopList, map.getCameraPosition().zoom));
+            map.setOnCameraMoveListener(() -> addItemsToMap(stops, map.getCameraPosition().zoom));
         }
     }
 
@@ -339,15 +339,15 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void showSearchResult(List<Stop> stopList) {
-        svSearch.swapSuggestions(stopList);
+    public void showSearchResult(List<Stop> stops) {
+        svSearch.swapSuggestions(stops);
     }
 
     @Override
-    public void showStopBookmarks(List<StopBookmark> stopBookmarkList) {
+    public void showStopBookmarks(List<StopBookmark> stopBookmarks) {
         ndStopBookmarks.removeAllItems();
         ndStopBookmarks.addItem(new SectionDrawerItem().withName(R.string.nav_drawer_section_bookmarks));
-        for (StopBookmark stopBookmark : stopBookmarkList) {
+        for (StopBookmark stopBookmark : stopBookmarks) {
             ndStopBookmarks.addItem(new PrimaryDrawerItem()
                     .withIdentifier(stopBookmark.getId())
                     .withIcon(R.drawable.ic_stop_normal)
@@ -489,18 +489,18 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         }
     }
 
-    private void loadWebView(final String url) {
+    private void loadWebView(String url) {
         CookieManager.getInstance().setCookie("", CookieUtils.getCookies(getApplicationContext()));
         wvDashboard.clearHistory();
         wvDashboard.loadUrl(url);
     }
 
-    private void addItemsToMap(final List<Stop> stopList, float zoom) {
+    private void addItemsToMap(List<Stop> stops, float zoom) {
         LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
         LatLng latLng;
         int stopId;
 
-        for (Stop stop : stopList) {
+        for (Stop stop : stops) {
             stopId = stop.getId();
             latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
             if (zoom >= Constants.ZOOM_OVERVIEW) {
@@ -528,7 +528,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         presenter.selectMarker(key);
     }
 
-    private void moveToAndShowSelectedStop(final Stop stop, final boolean bookmarked, final boolean fromNavDrawer) {
+    private void moveToAndShowSelectedStop(Stop stop, boolean bookmarked, boolean fromNavDrawer) {
         highlightSelectedMarker(stop.getId());
         tvStopName.setText(stop.getName());
         cbBookmark.setChecked(bookmarked);

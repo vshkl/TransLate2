@@ -1,4 +1,4 @@
-package by.vshkl.translate2.mvp.model.transformer;
+package by.vshkl.translate2.mvp.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import by.vshkl.translate2.database.local.entity.StopEntity;
 import by.vshkl.translate2.mvp.model.Stop;
 
-public class StopTransformer {
+public class StopMapper {
 
     public static Stop transform(StopEntity stopEntity) {
         Stop stop = new Stop();
@@ -18,11 +18,11 @@ public class StopTransformer {
         return stop;
     }
 
-    public static List<Stop> transform(List<StopEntity> stopEntityList) {
-        List<Stop> stopList = new ArrayList<>(stopEntityList.size());
-        for (StopEntity stopEntity : stopEntityList) {
-            stopList.add(transform(stopEntity));
+    public static List<Stop> transform(List<StopEntity> stopEntities) {
+        List<Stop> stops = new ArrayList<>(stopEntities.size());
+        for (StopEntity stopEntity : stopEntities) {
+            stops.add(transform(stopEntity));
         }
-        return stopList;
+        return stops;
     }
 }

@@ -17,13 +17,13 @@ public interface MapView extends MvpView {
 
     void showToast(int messageId);
 
-    void placeMarkers(List<Stop> stopList);
+    void placeMarkers(List<Stop> stops);
 
     void showSelectedStop(Stop stop, boolean bookmarked, boolean fromNavDrawer);
 
-    void showSearchResult(List<Stop> stopList);
+    void showSearchResult(List<Stop> stops);
 
-    void showStopBookmarks(List<StopBookmark> stopBookmarkList);
+    void showStopBookmarks(List<StopBookmark> stopBookmarks);
 
     void showProgressBar();
 

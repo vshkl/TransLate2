@@ -9,4 +9,12 @@ public class UpdatedEntity extends Model {
 
     @Column(name = "Updated", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public long undatedTimestamp;
+
+    public UpdatedEntity() {
+    }
+
+    public UpdatedEntity(long undatedTimestamp) {
+        super();
+        this.undatedTimestamp = undatedTimestamp;
+    }
 }

@@ -12,7 +12,7 @@ import by.vshkl.translate2.R;
 
 public class LocaleUtils {
 
-    public static void setLocaleSettings(final Context context) {
+    public static void setLocaleSettings(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         boolean customLocale = preferences.getBoolean(context.getString(R.string.pref_key_custom_locale), false);
@@ -34,7 +34,7 @@ public class LocaleUtils {
         }
     }
 
-    public static void setLocale(final Context context) {
+    public static void setLocale(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         boolean customLocale = preferences.getBoolean(context.getString(R.string.pref_key_custom_locale), false);
@@ -48,7 +48,7 @@ public class LocaleUtils {
         setLocale(context, language);
     }
 
-    private static void setLocale(final Context context, final String language) {
+    private static void setLocale(Context context, String language) {
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
         Resources resources = context.getResources();
