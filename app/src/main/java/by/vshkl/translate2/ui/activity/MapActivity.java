@@ -490,11 +490,13 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
             return;
         }
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, getLocationRequest(), location -> {
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants.ZOOM_POSITION));
-        });
+        if (googleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, getLocationRequest(), location -> {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                map.setMyLocationEnabled(true);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants.ZOOM_POSITION));
+            });
+        }
     }
 
     private void loadWebView(String url) {
@@ -563,23 +565,23 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     private void turnOnLocation() {
+        if (!googleApiClient.isConnected()) {
+            googleApiClient.connect();
+        }
+
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(getLocationRequest());
         builder.setAlwaysShow(true);
 
         LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
                 .setResultCallback(locationResult -> {
                     final Status status = locationResult.getStatus();
-                    switch (locationResult.getStatus().getStatusCode()) {
-                        case LocationSettingsStatusCodes.SUCCESS:
-                            showUserLocation();
-                            break;
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            try {
-                                status.startResolutionForResult(this, 0x1);
-                            } catch (IntentSender.SendIntentException e) {
-                                Log.d(TAG, e.toString());
-                            }
-                            break;
+                    if (locationResult.getStatus().getStatusCode() == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                        try {
+                            status.startResolutionForResult(this, 0x1);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.d(TAG, e.toString());
+                        }
+
                     }
                 });
     }
