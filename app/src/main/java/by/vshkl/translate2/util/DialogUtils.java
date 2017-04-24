@@ -2,7 +2,9 @@ package by.vshkl.translate2.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.text.InputType;
+import android.webkit.CookieManager;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -97,6 +99,12 @@ public class DialogUtils {
                 .negativeText(R.string.logout_decline)
                 .onPositive((dialog, which) -> {
                     CookieUtils.deleteCookies(activity.getBaseContext());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        CookieManager.getInstance().removeAllCookies(null);
+                        CookieManager.getInstance().flush();
+                    } else {
+                        CookieManager.getInstance().removeAllCookie();
+                    }
                     Navigation.restartApp(activity.getBaseContext());
                 })
                 .show();
