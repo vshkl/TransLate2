@@ -30,10 +30,6 @@ public class Navigation {
         context.startActivity(intent);
     }
 
-    public static void navigateToLocationSettings(Context context) {
-        context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-    }
-
     public static void navigateToSettings(Context context) {
         context.startActivity(SettingsActivity.newIntent(context));
     }

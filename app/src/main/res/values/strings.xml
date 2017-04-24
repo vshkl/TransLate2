@@ -13,7 +13,6 @@
     <string name="map_permission_denied_message" translatable="true">Location permission denied.</string>
     <string name="settings" translatable="true">Settings</string>
 
-    <string name="map_location_message" translatable="true">To continue, turn on location</string>
     <string name="map_location_ok" translatable="true">Turn on</string>
     <string name="map_location_cancel" translatable="true">@android:string/cancel</string>
 
