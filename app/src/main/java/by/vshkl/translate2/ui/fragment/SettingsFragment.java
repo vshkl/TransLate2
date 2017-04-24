@@ -8,7 +8,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 
 import by.vshkl.translate2.R;
-import by.vshkl.translate2.ui.activity.SettingsActivity;
 import by.vshkl.translate2.util.DialogUtils;
 import by.vshkl.translate2.util.Navigation;
 
@@ -21,7 +20,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         addPreferencesFromResource(R.xml.preferences);
         findPreference(getString(R.string.pref_delete_bookmarks_key)).setOnPreferenceClickListener(this);
         findPreference(getString(R.string.pref_logout_key)).setOnPreferenceClickListener(this);
-
     }
 
     @Override

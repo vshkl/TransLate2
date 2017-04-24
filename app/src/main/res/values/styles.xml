@@ -19,9 +19,4 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="SearchView">
-        <item name="floatingSearch_dividerColor">@color/divider</item>
-        <item name="floatingSearch_suggestionRightIconColor">@color/colorIconGray</item>
-    </style>
-
 </resources>

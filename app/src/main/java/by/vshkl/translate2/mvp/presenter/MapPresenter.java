@@ -14,16 +14,14 @@ import java.util.Map;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.LocalRepository;
 import by.vshkl.translate2.database.remote.FirebaseRepository;
+import by.vshkl.translate2.mvp.mapper.StopBookmarkMapper;
+import by.vshkl.translate2.mvp.mapper.StopMapper;
 import by.vshkl.translate2.mvp.model.MarkerWrapper;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
-import by.vshkl.translate2.mvp.mapper.StopBookmarkMapper;
-import by.vshkl.translate2.mvp.mapper.StopMapper;
 import by.vshkl.translate2.mvp.view.MapView;
 import by.vshkl.translate2.util.RxUtils;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
 public class MapPresenter extends MvpPresenter<MapView> {

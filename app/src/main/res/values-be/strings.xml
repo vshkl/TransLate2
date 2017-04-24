@@ -8,8 +8,6 @@
 
     <string name="map_permission_rationale_title" translatable="true">Месцазнаходжанне</string>
     <string name="map_permission_rationale_message" translatable="true">Дазволіць TransLate доступ да масцазнаходжання гэтага прылады?</string>
-    <string name="map_permission_rationale_allow" translatable="true">Дазволіць</string>
-    <string name="map_permission_rationale_deny" translatable="true">Адмовіць</string>
     <string name="map_permission_denied_message">Адмоўлена у вызначэнні месцазнаходжання.</string>
     <string name="settings" translatable="true">Налады</string>
 
