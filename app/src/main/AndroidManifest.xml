@@ -28,6 +28,12 @@
             android:name="AA_DB_VERSION"
             android:value="2"/>
 
+        <meta-data
+            android:name="AA_MODELS"
+            android:value="by.vshkl.translate2.database.local.entity.StopBookmarkEntity,
+                by.vshkl.translate2.database.local.entity.StopEntity,
+                by.vshkl.translate2.database.local.entity.UpdatedEntity"/>
+
         <activity
             android:name="by.vshkl.translate2.ui.activity.SplashScreenActivity"
             android:theme="@style/SplashScreenTheme">
@@ -45,8 +51,8 @@
 
         <activity
             android:name="by.vshkl.translate2.ui.activity.MapActivity"
-            android:screenOrientation="portrait"
             android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
 
         <activity

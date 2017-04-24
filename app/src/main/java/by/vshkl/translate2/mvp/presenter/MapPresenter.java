@@ -20,6 +20,7 @@ import by.vshkl.translate2.mvp.model.StopBookmark;
 import by.vshkl.translate2.mvp.mapper.StopBookmarkMapper;
 import by.vshkl.translate2.mvp.mapper.StopMapper;
 import by.vshkl.translate2.mvp.view.MapView;
+import by.vshkl.translate2.util.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -44,8 +45,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     public void getUpdatedTimestampFromRemoteDatabase() {
         disposable = FirebaseRepository.getUpdatedTimestamp()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(updated -> {
                     updatedTimestamp = updated.getUpdatedTimestamp();
                     isOutdatedOrNotExists(updatedTimestamp);
@@ -55,8 +55,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     public void getAllStopsFromRemoteDatabase() {
         getViewState().showProgressBar();
         disposable = FirebaseRepository.getAllStops()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(stops -> {
                     getViewState().hideProgressBar();
                     this.stops = stops;
@@ -68,8 +67,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     public void getAllStopsFromLocalDatabase() {
         disposable = LocalRepository.loadStops()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(stopEntities -> {
                     stops = StopMapper.transform(stopEntities);
                     placeMarkers();
@@ -92,8 +90,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     public void getAllStopBookmarksFromLocalDatabase() {
         disposable = LocalRepository.loadStopBookmarks()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(stopBookmarkEntities -> {
                     stopBookmarks = StopBookmarkMapper.transform(stopBookmarkEntities);
                     getViewState().showStopBookmarks(stopBookmarks);
@@ -130,8 +127,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     private void saveStopBookmark(Stop stop) {
         disposable = LocalRepository.saveStopBookmark(stop)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(aBoolean -> {
                     getViewState().showToast(aBoolean
                             ? R.string.bookmark_save_success
@@ -142,8 +138,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     private void removeStopBookmark(Stop stop) {
         disposable = LocalRepository.removeStopBookmark(stop)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(aBoolean -> {
                     getViewState().showToast(aBoolean
                             ? R.string.bookmark_remove_fail
@@ -154,8 +149,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     public void renameStopBookmark(String newStopName) {
         disposable = LocalRepository.renameStopBookmark(selectedStopId, newStopName)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(aBoolean -> {
                     getViewState().showToast(aBoolean
                             ? R.string.bookmark_rename_success
@@ -166,16 +160,14 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     private void saveAllStopsToLocalDatabase() {
         disposable = LocalRepository.saveAllStops(stops, updatedTimestamp)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(aBoolean -> {
                 });
     }
 
     private void isOutdatedOrNotExists(final long updatedTimestamp) {
         disposable = LocalRepository.isOutdatedOrNotExists(updatedTimestamp)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(aBoolean -> {
                     if (aBoolean) {
                         getViewState().showUpdateStopsSnackbar();

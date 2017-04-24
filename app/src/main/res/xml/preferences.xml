@@ -28,4 +28,19 @@
         android:title="@string/pref_nav_stop_open_title"
         />
 
+    <PreferenceCategory
+        android:title="@string/pref_category_other"
+        />
+
+    <Preference
+        android:key="@string/pref_delete_bookmarks_key"
+        android:title="@string/pref_delete_bookmarks_title"
+        android:summary="@string/pref_delete_bookmarks_summary"
+        />
+
+    <Preference
+        android:key="@string/pref_logout_key"
+        android:title="@string/pref_logout_title"
+        />
+
 </PreferenceScreen>

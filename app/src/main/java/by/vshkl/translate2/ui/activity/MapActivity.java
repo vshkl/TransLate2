@@ -272,7 +272,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onEditBookmark() {
-        DialogUtils.shoeBookmarkRenameDialog(this, presenter.getSelectedStopBookmarkName(), this);
+        DialogUtils.showBookmarkRenameDialog(this, presenter.getSelectedStopBookmarkName(), this);
     }
 
     @Override
@@ -459,7 +459,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                 .withOnDrawerItemClickListener(this)
                 .withOnDrawerItemLongClickListener(this)
                 .build();
-        presenter.getAllStopBookmarksFromLocalDatabase();
+        presenter.getAllStopBookmarksFromLocalDatabase();   //TODO: Move somewhere else
     }
 
     private void setupMap() {

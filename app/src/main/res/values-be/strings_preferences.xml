@@ -22,4 +22,13 @@
     <string name="pref_nav_stop_open_summary_on" translatable="true">Паказваць расклад у разгорнутым стане</string>
     <string name="pref_nav_stop_open_summary_off" translatable="true">Паказваць расклад у згорнутым стане</string>
 
+    <!-- Other -->
+
+    <string name="pref_category_other" translatable="true">Іншае</string>
+
+    <string name="pref_delete_bookmarks_title" translatable="true">Выдаліць закладкі</string>
+    <string name="pref_delete_bookmarks_summary" translatable="true">Выдаліць усе дададзеныя ў закладкі прыпынкі</string>
+
+    <string name="pref_logout_title" translatable="true">Выхад</string>
+
 </resources>

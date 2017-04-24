@@ -34,6 +34,14 @@
     <string name="bookmark_delete_ok" translatable="true">Выдаліць</string>
     <string name="bookmark_delete_cancel" translatable="true">@android:string/cancel</string>
 
+    <string name="bookmarks_delete_title" translatable="true">Выдаліць закладкі</string>
+    <string name="bookmarks_delete_message" translatable="true">Выдаліць усе дададзеныя ў закладкі прыпынкі?</string>
+    <string name="bookmarks_delete_success" translatable="true">Закладкі выдалены.</string>
+
+    <string name="logout_title" translatable="true">Выйсці?</string>
+    <string name="logout_confirm" translatable="true">Выйсці</string>
+    <string name="logout_decline" translatable="true">Адмяніць</string>
+
     <string-array name="bookmarks_dialog_actions" translatable="true">
         <item>Перайменаваць прыпынак</item>
         <item>Выдаліць прыпынак</item>

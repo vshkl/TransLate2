@@ -29,4 +29,11 @@ public class CookieUtils {
                 .build();
         return preferences.getString(context.getString(R.string.pref_key_cookies), "");
     }
+
+    public static void deleteCookies(Context context) {
+        EncryptedPreferences preferences = new EncryptedPreferences.Builder(context)
+                .withEncryptionPassword(BuildConfig.ENCRYPTED_PREFERENCES_PWD)
+                .build();
+        preferences.edit().clear().apply();
+    }
 }

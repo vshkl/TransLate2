@@ -76,6 +76,13 @@ public class LocalRepository {
         });
     }
 
+    public static Observable<Boolean> removeStopBookmarks() {
+        return Observable.create(emitter -> {
+            new Delete().from(StopBookmarkEntity.class).execute();
+            emitter.onNext(new Select().from(StopBookmarkEntity.class).exists());
+        });
+    }
+
     public static Observable<Boolean> renameStopBookmark(int stopId, String newStopName) {
         return Observable.create(emitter -> {
             StopBookmarkEntity stop = new Select().from(StopBookmarkEntity.class).where(WHERE_ID, stopId).executeSingle();

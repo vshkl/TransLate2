@@ -1,11 +1,14 @@
 package by.vshkl.translate2.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.InputType;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import by.vshkl.translate2.R;
+import by.vshkl.translate2.database.local.LocalRepository;
 import by.vshkl.translate2.ui.StopBookmarkListener;
 import permissions.dispatcher.PermissionRequest;
 
@@ -55,7 +58,25 @@ public class DialogUtils {
                 .show();
     }
 
-    public static void shoeBookmarkRenameDialog(Context context, String stopName, StopBookmarkListener listener) {
+    public static void showBookmarksDeleteConfirmationDialog(Activity activity) {
+        new MaterialDialog.Builder(activity)
+                .title(R.string.bookmarks_delete_title)
+                .content(R.string.bookmarks_delete_message)
+                .positiveText(R.string.bookmark_delete_ok)
+                .negativeText(R.string.bookmark_delete_cancel)
+                .onPositive((dialog, which) -> LocalRepository.removeStopBookmarks()
+                        .compose(RxUtils.applySchedulers())
+                        .subscribe(aBoolean -> {
+                            if (!aBoolean) {
+                                Toast.makeText(activity, activity.getString(R.string.bookmarks_delete_success),
+                                        Toast.LENGTH_SHORT).show();
+                                Navigation.navigateToMap(activity.getBaseContext());
+                            }
+                        }))
+                .show();
+    }
+
+    public static void showBookmarkRenameDialog(Context context, String stopName, StopBookmarkListener listener) {
         new MaterialDialog.Builder(context)
                 .title(R.string.bookmark_dialog_rename_title)
                 .positiveText(R.string.bookmark_dialog_rename_ok)
@@ -66,6 +87,18 @@ public class DialogUtils {
                         })
                 .onPositive(
                         (dialog, which) -> listener.onRenameConfirmed(dialog.getInputEditText().getText().toString()))
+                .show();
+    }
+
+    public static void showLogoutConfirmationDialog(Activity activity) {
+        new MaterialDialog.Builder(activity)
+                .title(R.string.logout_title)
+                .positiveText(R.string.logout_confirm)
+                .negativeText(R.string.logout_decline)
+                .onPositive((dialog, which) -> {
+                    CookieUtils.deleteCookies(activity.getBaseContext());
+                    Navigation.restartApp(activity.getBaseContext());
+                })
                 .show();
     }
 }
