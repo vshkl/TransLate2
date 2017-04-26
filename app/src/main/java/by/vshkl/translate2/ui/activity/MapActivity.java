@@ -304,7 +304,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onDownloadUpdate(Version version) {
-        presenter.downloadUpdate((DownloadManager) getSystemService(DOWNLOAD_SERVICE), version);
+        MapActivityPermissionsDispatcher.downloadUpdateWithCheck(this, version);
     }
 
     @Override
@@ -416,6 +416,23 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
         Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
+                .setAction(R.string.settings, view -> Navigation.navigateToAppSettings(this))
+                .show();
+    }
+
+    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    void downloadUpdate(Version version) {
+        presenter.downloadUpdate((DownloadManager) getSystemService(DOWNLOAD_SERVICE), version);
+    }
+
+    @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    void showRationaleForWriteExternalStorage(final PermissionRequest request) {
+        DialogUtils.showWriteExternalStorageRationaleDialog(this, request);
+    }
+
+    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    void onDeniedForWriteExternalStorage() {
+        Snackbar.make(clRoot, "WRITE_EXTERNAL_STORAGE permission required!", Snackbar.LENGTH_LONG)  //TODO: Replace w/ string res
                 .setAction(R.string.settings, view -> Navigation.navigateToAppSettings(this))
                 .show();
     }

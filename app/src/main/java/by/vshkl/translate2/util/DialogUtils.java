@@ -29,6 +29,17 @@ public class DialogUtils {
                 .show();
     }
 
+    public static void showWriteExternalStorageRationaleDialog(Context context, PermissionRequest request) {
+        new MaterialDialog.Builder(context)
+                .title("WRITE_EXTERNAL_STORAGE")    //TODO: Replace w/ string res
+                .content("WRITE_EXTERNAL_STORAGE required. Grant permission?")    //TODO: Replace w/ string res
+                .positiveText("Grant")   //TODO: Replace w/ string res
+                .negativeText("Deny")   //TODO: Replace w/ string res
+                .onPositive((dialog, which) -> request.proceed())
+                .onNegative(((dialog, which) -> request.cancel()))
+                .show();
+    }
+
     public static void showBookmarkActionsDialog(Context context, StopBookmarkListener listener) {
         new MaterialDialog.Builder(context)
                 .items(R.array.bookmarks_dialog_actions)
