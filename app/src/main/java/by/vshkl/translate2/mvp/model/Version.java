@@ -7,6 +7,7 @@ public class Version {
     private String status;
     private String size;
     private String link;
+    private String filename;
 
     public int getVersionCode() {
         return versionCode;
@@ -46,6 +47,14 @@ public class Version {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     @Override

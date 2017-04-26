@@ -3,12 +3,10 @@ package by.vshkl.translate2.util;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.webkit.CookieManager;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import by.vshkl.translate2.R;
@@ -111,12 +109,8 @@ public class DialogUtils {
                 .positiveText("Update")
                 .negativeText("Cancel")
                 .neutralText("Skip update")
-                .onPositive((dialog, which) -> {
-                    listener.onDownloadUpdate(version.getLink());
-                })
-                .onNeutral((dialog, which) -> {
-                    listener.onSkipThisUpdate();
-                })
+                .onPositive((dialog, which) -> listener.onDownloadUpdate(version))
+                .onNeutral((dialog, which) -> listener.onSkipThisUpdate())
                 .show();
     }
 }

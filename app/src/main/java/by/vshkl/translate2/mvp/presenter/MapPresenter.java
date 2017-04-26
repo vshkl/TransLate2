@@ -1,6 +1,9 @@
 package by.vshkl.translate2.mvp.presenter;
 
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
+import android.net.Uri;
+import android.os.Environment;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -20,6 +23,7 @@ import by.vshkl.translate2.mvp.mapper.StopMapper;
 import by.vshkl.translate2.mvp.model.MarkerWrapper;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
+import by.vshkl.translate2.mvp.model.Version;
 import by.vshkl.translate2.mvp.view.MapView;
 import by.vshkl.translate2.util.RxUtils;
 import io.reactivex.disposables.Disposable;
@@ -40,6 +44,17 @@ public class MapPresenter extends MvpPresenter<MapView> {
             disposable.dispose();
         }
         super.onDestroy();
+    }
+
+    public void downloadUpdate(DownloadManager downloadManager, Version version) {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(version.getLink()));
+        request.setTitle("TransLate2")  //TODO: Replace hardcoded text
+                .setDescription("Downloading version " + version.getVersionName())  //TODO: Replace hardcoded text
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setVisibleInDownloadsUi(true)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, version.getFilename());
+
+        downloadManager.enqueue(request);
     }
 
     public void getUpdatedTimestampFromRemoteDatabase() {

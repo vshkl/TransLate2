@@ -2,6 +2,7 @@ package by.vshkl.translate2.ui.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -302,8 +303,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void onDownloadUpdate(String url) {
-        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+    public void onDownloadUpdate(Version version) {
+        presenter.downloadUpdate((DownloadManager) getSystemService(DOWNLOAD_SERVICE), version);
     }
 
     @Override
