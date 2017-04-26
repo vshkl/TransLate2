@@ -3,14 +3,18 @@ package by.vshkl.translate2.util;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.webkit.CookieManager;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.LocalRepository;
+import by.vshkl.translate2.mvp.model.Version;
+import by.vshkl.translate2.ui.listener.AppUpdateListener;
 import by.vshkl.translate2.ui.listener.StopBookmarkListener;
 import permissions.dispatcher.PermissionRequest;
 
@@ -96,6 +100,22 @@ public class DialogUtils {
                         CookieManager.getInstance().removeAllCookie();
                     }
                     Navigation.restartApp(activity.getBaseContext());
+                })
+                .show();
+    }
+
+    public static void showNewVersionAvailableDialog(Context context, AppUpdateListener listener, Version version) {
+        new MaterialDialog.Builder(context)
+                .title("New update available!")
+                .content("Version " + version.getVersionName() + " available to download.")
+                .positiveText("Update")
+                .negativeText("Cancel")
+                .neutralText("Skip update")
+                .onPositive((dialog, which) -> {
+                    listener.onDownloadUpdate(version.getLink());
+                })
+                .onNeutral((dialog, which) -> {
+                    listener.onSkipThisUpdate();
                 })
                 .show();
     }

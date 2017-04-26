@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import by.vshkl.translate2.BuildConfig;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.LocalRepository;
 import by.vshkl.translate2.database.remote.FirebaseRepository;
@@ -50,6 +51,16 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 });
     }
 
+    public void getLatestVersionInfoFromRemoteDatabase() {
+        disposable = FirebaseRepository.getLatestVersion()
+                .compose(RxUtils.applySchedulers())
+                .subscribe(version -> {
+                    if (version.getVersionCode() > BuildConfig.VERSION_CODE) {
+                        getViewState().showNewVersionAvailable(version);
+                    }
+                });
+    }
+
     public void getAllStopsFromRemoteDatabase() {
         getViewState().showProgressBar();
         disposable = FirebaseRepository.getAllStops()
@@ -72,7 +83,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 });
     }
 
-    public void getStopById(final int stopId, final boolean fromNavDrawer) {
+    public void getStopById(int stopId, boolean fromNavDrawer) {
         selectedStopId = stopId;
         if (stops != null && stopBookmarks != null) {
             for (Stop stop : stops) {
@@ -95,7 +106,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 });
     }
 
-    public void searchStops(final String searchQuery) {
+    public void searchStops(String searchQuery) {
         if (stops != null) {
             Map<String, Stop> stopMap = new HashMap<>();
             for (Stop stop : stops) {

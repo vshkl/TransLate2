@@ -77,8 +77,10 @@ import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.model.MarkerWrapper;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
+import by.vshkl.translate2.mvp.model.Version;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
+import by.vshkl.translate2.ui.listener.AppUpdateListener;
 import by.vshkl.translate2.ui.listener.StopBookmarkListener;
 import by.vshkl.translate2.util.Constants;
 import by.vshkl.translate2.util.CookieUtils;
@@ -96,7 +98,7 @@ import permissions.dispatcher.RuntimePermissions;
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
         OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
         OnFocusChangeListener, OnMenuItemClickListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener,
-        StopBookmarkListener {
+        StopBookmarkListener, AppUpdateListener {
 
     private static final String TAG = "MapActivity";
 
@@ -200,6 +202,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         map = googleMap;
         setupMap();
         presenter.getUpdatedTimestampFromRemoteDatabase();
+        presenter.getLatestVersionInfoFromRemoteDatabase();
         presenter.getAllStopsFromLocalDatabase();
     }
 
@@ -298,6 +301,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         presenter.renameStopBookmark(newStopName);
     }
 
+    @Override
+    public void onDownloadUpdate(String url) {
+        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSkipThisUpdate() {
+        Toast.makeText(this, "Skip this update", Toast.LENGTH_SHORT).show();
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     @Override
@@ -305,6 +318,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.map_update_stops_update, view -> presenter.getAllStopsFromRemoteDatabase())
                 .show();
+    }
+
+    @Override
+    public void showNewVersionAvailable(Version version) {
+        DialogUtils.showNewVersionAvailableDialog(this, this, version);
     }
 
     @Override
