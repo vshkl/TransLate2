@@ -59,5 +59,6 @@
     <string name="write_external_storage_rationale_message" translatable="true">Для запампоўкі файлаў TransLate патрабуецца доступ да сховішча.</string>
     <string name="write_external_storage_rationale_ok" translatable="true">Дазволіць</string>
     <string name="write_external_storage_rationale_cancel" translatable="true">@android:string/cancel</string>
+    <string name="write_external_storage_denied_message" translatable="true">У доступе да сховішча адмоўлена.</string>
 
 </resources>

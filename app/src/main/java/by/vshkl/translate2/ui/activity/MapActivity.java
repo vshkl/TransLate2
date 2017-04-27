@@ -432,7 +432,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     void onDeniedForWriteExternalStorage() {
-        Snackbar.make(clRoot, "WRITE_EXTERNAL_STORAGE permission required!", Snackbar.LENGTH_LONG)  //TODO: Replace w/ string res
+        Snackbar.make(clRoot, R.string.write_external_storage_denied_message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.settings, view -> Navigation.navigateToAppSettings(this))
                 .show();
     }

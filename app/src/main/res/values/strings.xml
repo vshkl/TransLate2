@@ -59,5 +59,6 @@
     <string name="write_external_storage_rationale_message" translatable="true">TransLate needs storage access to download files.</string>
     <string name="write_external_storage_rationale_ok" translatable="true">Allow</string>
     <string name="write_external_storage_rationale_cancel" translatable="true">@android:string/cancel</string>
+    <string name="write_external_storage_denied_message" translatable="true">Write external storage permission denied.</string>
 
 </resources>
