@@ -48,8 +48,8 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     public void downloadUpdate(DownloadManager downloadManager, Version version) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(version.getLink()));
-        request.setTitle("TransLate2")  //TODO: Replace hardcoded text
-                .setDescription("Downloading version " + version.getVersionName())  //TODO: Replace hardcoded text
+        request.setTitle("TransLate")
+                .setDescription(version.getFilename())
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setVisibleInDownloadsUi(true)
                 .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, version.getFilename());

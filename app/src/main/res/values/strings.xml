@@ -49,4 +49,15 @@
     <string name="bookmark_dialog_rename_ok" translatable="true">Rename</string>
     <string name="bookmark_dialog_rename_cancel" translatable="true">@android:string/cancel</string>
 
+    <string name="update_dialog_title" translatable="true">New update available</string>
+    <string name="update_dialog_content" translatable="true">Version %1$s is available.\nDownload size: %2$s</string>
+    <string name="update_dialog_ok" translatable="true">Update</string>
+    <string name="update_dialog_neutral" translatable="true">Ignore this update</string>
+    <string name="update_dialog_cancel" translatable="true">@android:string/cancel</string>
+
+    <string name="write_external_storage_rationale_title" translatable="true">Access external storage</string>
+    <string name="write_external_storage_rationale_message" translatable="true">TransLate needs storage access to download files.</string>
+    <string name="write_external_storage_rationale_ok" translatable="true">Allow</string>
+    <string name="write_external_storage_rationale_cancel" translatable="true">@android:string/cancel</string>
+
 </resources>

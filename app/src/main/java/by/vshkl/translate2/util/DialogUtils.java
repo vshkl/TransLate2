@@ -31,10 +31,10 @@ public class DialogUtils {
 
     public static void showWriteExternalStorageRationaleDialog(Context context, PermissionRequest request) {
         new MaterialDialog.Builder(context)
-                .title("WRITE_EXTERNAL_STORAGE")    //TODO: Replace w/ string res
-                .content("WRITE_EXTERNAL_STORAGE required. Grant permission?")    //TODO: Replace w/ string res
-                .positiveText("Grant")   //TODO: Replace w/ string res
-                .negativeText("Deny")   //TODO: Replace w/ string res
+                .title(R.string.write_external_storage_rationale_title)
+                .content(R.string.write_external_storage_rationale_message)
+                .positiveText(R.string.write_external_storage_rationale_ok)
+                .negativeText(R.string.write_external_storage_rationale_cancel)
                 .onPositive((dialog, which) -> request.proceed())
                 .onNegative(((dialog, which) -> request.cancel()))
                 .show();
@@ -115,11 +115,11 @@ public class DialogUtils {
 
     public static void showNewVersionAvailableDialog(Context context, AppUpdateListener listener, Version version) {
         new MaterialDialog.Builder(context)
-                .title("New update available!")
-                .content("Version " + version.getVersionName() + " available to download.")
-                .positiveText("Update")
-                .negativeText("Cancel")
-                .neutralText("Skip update")
+                .title(R.string.update_dialog_title)
+                .content(R.string.update_dialog_content, version.getVersionName(), version.getSize())
+                .positiveText(R.string.update_dialog_ok)
+                .negativeText(R.string.update_dialog_cancel)
+                .neutralText(R.string.update_dialog_neutral)
                 .onPositive((dialog, which) -> listener.onDownloadUpdate(version))
                 .onNeutral((dialog, which) -> listener.onSkipThisUpdate())
                 .show();
