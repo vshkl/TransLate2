@@ -49,4 +49,16 @@
     <string name="bookmark_dialog_rename_ok" translatable="true">Переименовать</string>
     <string name="bookmark_dialog_rename_cancel" translatable="true">@android:string/cancel</string>
 
+    <string name="update_dialog_title" translatable="true">Обновление доступно</string>
+    <string name="update_dialog_content" translatable="true">Версия %1$s доступна.\nРазмер файла: %2$s</string>
+    <string name="update_dialog_ok" translatable="true">Обновить</string>
+    <string name="update_dialog_neutral" translatable="true">Игнорировать это обновление</string>
+    <string name="update_dialog_cancel" translatable="true">@android:string/cancel</string>
+
+    <string name="write_external_storage_rationale_title" translatable="true">Доступ к хранилищу</string>
+    <string name="write_external_storage_rationale_message" translatable="true">Для скачивания файлов TransLate требуется доступ к хранилищу.</string>
+    <string name="write_external_storage_rationale_ok" translatable="true">Разрешить</string>
+    <string name="write_external_storage_rationale_cancel" translatable="true">@android:string/cancel</string>
+    <string name="write_external_storage_denied_message" translatable="true">В доступе к хранилищу отказано.</string>
+
 </resources>

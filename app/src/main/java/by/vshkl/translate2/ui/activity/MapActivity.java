@@ -2,6 +2,7 @@ package by.vshkl.translate2.ui.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -77,8 +78,10 @@ import by.vshkl.translate2.R;
 import by.vshkl.translate2.mvp.model.MarkerWrapper;
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
+import by.vshkl.translate2.mvp.model.Version;
 import by.vshkl.translate2.mvp.presenter.MapPresenter;
 import by.vshkl.translate2.mvp.view.MapView;
+import by.vshkl.translate2.ui.listener.AppUpdateListener;
 import by.vshkl.translate2.ui.listener.StopBookmarkListener;
 import by.vshkl.translate2.util.Constants;
 import by.vshkl.translate2.util.CookieUtils;
@@ -96,7 +99,7 @@ import permissions.dispatcher.RuntimePermissions;
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
         OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
         OnFocusChangeListener, OnMenuItemClickListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener,
-        StopBookmarkListener {
+        StopBookmarkListener, AppUpdateListener {
 
     private static final String TAG = "MapActivity";
 
@@ -200,6 +203,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         map = googleMap;
         setupMap();
         presenter.getUpdatedTimestampFromRemoteDatabase();
+        presenter.getLatestVersionInfoFromRemoteDatabase(PreferenceUtils.getIgnoreUpdateVersion(this));
         presenter.getAllStopsFromLocalDatabase();
     }
 
@@ -298,6 +302,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         presenter.renameStopBookmark(newStopName);
     }
 
+    @Override
+    public void onDownloadUpdate(Version version) {
+        MapActivityPermissionsDispatcher.downloadUpdateWithCheck(this, version);
+    }
+
+    @Override
+    public void onSkipThisUpdate(Version version) {
+        PreferenceUtils.setIgnoreUpdateVersion(this, version.getVersionCode());
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     @Override
@@ -305,6 +319,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.map_update_stops_update, view -> presenter.getAllStopsFromRemoteDatabase())
                 .show();
+    }
+
+    @Override
+    public void showNewVersionAvailable(Version version) {
+        DialogUtils.showNewVersionAvailableDialog(this, this, version);
     }
 
     @Override
@@ -397,6 +416,23 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
         Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
+                .setAction(R.string.settings, view -> Navigation.navigateToAppSettings(this))
+                .show();
+    }
+
+    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    void downloadUpdate(Version version) {
+        presenter.downloadUpdate((DownloadManager) getSystemService(DOWNLOAD_SERVICE), version);
+    }
+
+    @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    void showRationaleForWriteExternalStorage(final PermissionRequest request) {
+        DialogUtils.showWriteExternalStorageRationaleDialog(this, request);
+    }
+
+    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    void onDeniedForWriteExternalStorage() {
+        Snackbar.make(clRoot, R.string.write_external_storage_denied_message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.settings, view -> Navigation.navigateToAppSettings(this))
                 .show();
     }

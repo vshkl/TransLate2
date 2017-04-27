@@ -49,4 +49,16 @@
     <string name="bookmark_dialog_rename_ok" translatable="true">Перайменаваць</string>
     <string name="bookmark_dialog_rename_cancel" translatable="true">@android:string/cancel</string>
 
+    <string name="update_dialog_title" translatable="true">Абнаўленне даступна</string>
+    <string name="update_dialog_content" translatable="true">Версія %1$s даступна.\nПамер файла: %2$s</string>
+    <string name="update_dialog_ok" translatable="true">Абнавіць</string>
+    <string name="update_dialog_neutral" translatable="true">Ігнараваць гэта абнаўленне</string>
+    <string name="update_dialog_cancel" translatable="true">@android:string/cancel</string>
+
+    <string name="write_external_storage_rationale_title" translatable="true">Доступ да сховішча</string>
+    <string name="write_external_storage_rationale_message" translatable="true">Для запампоўкі файлаў TransLate патрабуецца доступ да сховішча.</string>
+    <string name="write_external_storage_rationale_ok" translatable="true">Дазволіць</string>
+    <string name="write_external_storage_rationale_cancel" translatable="true">@android:string/cancel</string>
+    <string name="write_external_storage_denied_message" translatable="true">У доступе да сховішча адмоўлена.</string>
+
 </resources>

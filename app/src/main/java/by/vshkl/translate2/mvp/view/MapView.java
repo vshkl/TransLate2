@@ -6,10 +6,13 @@ import java.util.List;
 
 import by.vshkl.translate2.mvp.model.Stop;
 import by.vshkl.translate2.mvp.model.StopBookmark;
+import by.vshkl.translate2.mvp.model.Version;
 
 public interface MapView extends MvpView {
 
     void showUpdateStopsSnackbar();
+
+    void showNewVersionAvailable(Version version);
 
     void initializeMap();
 

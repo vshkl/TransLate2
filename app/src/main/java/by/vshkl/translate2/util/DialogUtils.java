@@ -11,6 +11,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.LocalRepository;
+import by.vshkl.translate2.mvp.model.Version;
+import by.vshkl.translate2.ui.listener.AppUpdateListener;
 import by.vshkl.translate2.ui.listener.StopBookmarkListener;
 import permissions.dispatcher.PermissionRequest;
 
@@ -22,6 +24,17 @@ public class DialogUtils {
                 .content(R.string.map_permission_rationale_message)
                 .positiveText(R.string.map_location_ok)
                 .negativeText(R.string.map_location_cancel)
+                .onPositive((dialog, which) -> request.proceed())
+                .onNegative(((dialog, which) -> request.cancel()))
+                .show();
+    }
+
+    public static void showWriteExternalStorageRationaleDialog(Context context, PermissionRequest request) {
+        new MaterialDialog.Builder(context)
+                .title(R.string.write_external_storage_rationale_title)
+                .content(R.string.write_external_storage_rationale_message)
+                .positiveText(R.string.write_external_storage_rationale_ok)
+                .negativeText(R.string.write_external_storage_rationale_cancel)
                 .onPositive((dialog, which) -> request.proceed())
                 .onNegative(((dialog, which) -> request.cancel()))
                 .show();
@@ -97,6 +110,18 @@ public class DialogUtils {
                     }
                     Navigation.restartApp(activity.getBaseContext());
                 })
+                .show();
+    }
+
+    public static void showNewVersionAvailableDialog(Context context, AppUpdateListener listener, Version version) {
+        new MaterialDialog.Builder(context)
+                .title(R.string.update_dialog_title)
+                .content(R.string.update_dialog_content, version.getVersionName(), version.getSize())
+                .positiveText(R.string.update_dialog_ok)
+                .negativeText(R.string.update_dialog_cancel)
+                .neutralText(R.string.update_dialog_neutral)
+                .onPositive((dialog, which) -> listener.onDownloadUpdate(version))
+                .onNeutral((dialog, which) -> listener.onSkipThisUpdate(version))
                 .show();
     }
 }
