@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import by.vshkl.translate2.BuildConfig;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.database.local.LocalRepository;
 import by.vshkl.translate2.database.remote.FirebaseRepository;
@@ -69,7 +70,8 @@ public class MapPresenter extends MvpPresenter<MapView> {
         disposable = FirebaseRepository.getLatestVersion()
                 .compose(RxUtils.applySchedulers())
                 .subscribe(version -> {
-                    if (version.getVersionCode() > ignoreUpdateVersion) {
+                    if (version.getVersionCode() > ignoreUpdateVersion
+                            && version.getVersionCode() > BuildConfig.VERSION_CODE) {
                         getViewState().showNewVersionAvailable(version);
                     }
                 });
