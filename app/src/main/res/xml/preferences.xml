@@ -33,9 +33,15 @@
         />
 
     <Preference
+        android:key="@string/pref_update_key"
+        android:summary="@string/pref_update_summary"
+        android:title="@string/pref_update_title"
+        />
+
+    <Preference
         android:key="@string/pref_delete_bookmarks_key"
-        android:title="@string/pref_delete_bookmarks_title"
         android:summary="@string/pref_delete_bookmarks_summary"
+        android:title="@string/pref_delete_bookmarks_title"
         />
 
     <Preference

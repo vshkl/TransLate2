@@ -39,6 +39,10 @@
 
     <string name="pref_category_other" translatable="true">Other</string>
 
+    <string name="pref_update_key" translatable="false">pref_update_key</string>
+    <string name="pref_update_title" translatable="true">Update</string>
+    <string name="pref_update_summary" translatable="true">Check for update</string>
+
     <string name="pref_delete_bookmarks_key" translatable="false">pref_delete_bookmarks_key</string>
     <string name="pref_delete_bookmarks_title" translatable="true">Delete bookmarks</string>
     <string name="pref_delete_bookmarks_summary" translatable="true">Delete all bookmarked stops</string>

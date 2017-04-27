@@ -10,6 +10,7 @@ import android.preference.PreferenceFragment;
 import by.vshkl.translate2.R;
 import by.vshkl.translate2.util.DialogUtils;
 import by.vshkl.translate2.util.Navigation;
+import by.vshkl.translate2.util.PreferenceUtils;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener,
         OnPreferenceClickListener {
@@ -18,6 +19,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        findPreference(getString(R.string.pref_update_key)).setOnPreferenceClickListener(this);
         findPreference(getString(R.string.pref_delete_bookmarks_key)).setOnPreferenceClickListener(this);
         findPreference(getString(R.string.pref_logout_key)).setOnPreferenceClickListener(this);
     }
@@ -49,6 +51,10 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             return true;
         } else if (preference.getKey().equals(getString(R.string.pref_logout_key))) {
             DialogUtils.showLogoutConfirmationDialog(getActivity());
+            return true;
+        } else if (preference.getKey().equals(getString(R.string.pref_update_key))) {
+            PreferenceUtils.setIgnoreUpdateVersion(getActivity().getBaseContext(), -1);
+            Navigation.navigateToMap(getActivity().getBaseContext());
             return true;
         } else {
             return false;

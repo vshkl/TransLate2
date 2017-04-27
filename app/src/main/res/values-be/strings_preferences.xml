@@ -26,6 +26,9 @@
 
     <string name="pref_category_other" translatable="true">Іншае</string>
 
+    <string name="pref_update_title" translatable="true">Абнаўленне</string>
+    <string name="pref_update_summary" translatable="true">Праверыць наяўнасць абнаўлення</string>
+
     <string name="pref_delete_bookmarks_title" translatable="true">Выдаліць закладкі</string>
     <string name="pref_delete_bookmarks_summary" translatable="true">Выдаліць усе дададзеныя ў закладкі прыпынкі</string>
 
