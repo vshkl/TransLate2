@@ -121,7 +121,7 @@ public class DialogUtils {
                 .negativeText(R.string.update_dialog_cancel)
                 .neutralText(R.string.update_dialog_neutral)
                 .onPositive((dialog, which) -> listener.onDownloadUpdate(version))
-                .onNeutral((dialog, which) -> listener.onSkipThisUpdate())
+                .onNeutral((dialog, which) -> listener.onSkipThisUpdate(version))
                 .show();
     }
 }

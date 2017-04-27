@@ -203,7 +203,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         map = googleMap;
         setupMap();
         presenter.getUpdatedTimestampFromRemoteDatabase();
-        presenter.getLatestVersionInfoFromRemoteDatabase();
+        presenter.getLatestVersionInfoFromRemoteDatabase(PreferenceUtils.getIgnoreUpdateVersion(this));
         presenter.getAllStopsFromLocalDatabase();
     }
 
@@ -308,8 +308,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void onSkipThisUpdate() {
-        Toast.makeText(this, "Skip this update", Toast.LENGTH_SHORT).show();
+    public void onSkipThisUpdate(Version version) {
+        PreferenceUtils.setIgnoreUpdateVersion(this, version.getVersionCode());
     }
 
     //------------------------------------------------------------------------------------------------------------------

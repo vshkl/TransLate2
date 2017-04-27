@@ -6,5 +6,5 @@ public interface AppUpdateListener {
 
     void onDownloadUpdate(Version version);
 
-    void onSkipThisUpdate();
+    void onSkipThisUpdate(Version version);
 }
