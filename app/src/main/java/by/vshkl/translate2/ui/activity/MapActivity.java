@@ -429,7 +429,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                     .withIdentifier(stopBookmark.getId())
                     .withIcon(R.drawable.ic_stop_normal)
                     .withSelectedIcon(R.drawable.ic_stop_selected)
-                    .withSelectedTextColor(ContextCompat.getColor(MapActivity.this, R.color.colorAccentText))
+                    .withTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText))
+                    .withSelectedTextColor(ContextCompat.getColor(this, R.color.colorAccentText))
                     .withName(stopBookmark.getName()));
         }
     }
