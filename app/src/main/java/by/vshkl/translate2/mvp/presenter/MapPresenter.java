@@ -8,6 +8,7 @@ import android.os.Environment;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -267,5 +268,13 @@ public class MapPresenter extends MvpPresenter<MapView> {
             }
         }
         return stopBookmarkName;
+    }
+
+    public void setupGoogleMap() {
+        getViewState().setupGoogleMap();
+    }
+
+    public void animateMapCamera(LatLng latLng, float zoomLevel) {
+        getViewState().animateMapCamera(latLng, zoomLevel);
     }
 }

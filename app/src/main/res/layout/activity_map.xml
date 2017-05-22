@@ -15,6 +15,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         map:mapType="normal"
+        map:uiCompass="false"
+        map:uiMapToolbar="false"
+        map:uiZoomControls="false"
         tools:context=".ui.activity.MapActivity"
         />
 

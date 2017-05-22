@@ -3,6 +3,7 @@ package by.vshkl.translate2.util;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.webkit.CookieManager;
 import android.widget.Toast;
@@ -87,6 +88,7 @@ public class DialogUtils {
                 .positiveText(R.string.bookmark_dialog_rename_ok)
                 .negativeText(R.string.bookmark_dialog_rename_cancel)
                 .inputType(InputType.TYPE_CLASS_TEXT)
+                .contentColor(ContextCompat.getColor(context, R.color.colorPrimaryText))
                 .input(context.getString(R.string.bookmark_dialog_rename_hint), stopName, false,
                         (dialog, input) -> {
                         })
