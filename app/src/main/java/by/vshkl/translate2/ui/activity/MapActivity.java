@@ -6,7 +6,6 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -46,7 +44,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
@@ -56,7 +53,6 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -89,6 +85,7 @@ import by.vshkl.translate2.util.Constants;
 import by.vshkl.translate2.util.CookieUtils;
 import by.vshkl.translate2.util.DialogUtils;
 import by.vshkl.translate2.util.LocaleUtils;
+import by.vshkl.translate2.util.LocationUtils;
 import by.vshkl.translate2.util.Navigation;
 import by.vshkl.translate2.util.PreferenceUtils;
 import permissions.dispatcher.NeedsPermission;
@@ -97,13 +94,18 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static by.vshkl.translate2.util.Constants.ZOOM_OVERVIEW;
+import static by.vshkl.translate2.util.Constants.ZOOM_POSITION;
+
 @RuntimePermissions
 public class MapActivity extends MvpAppCompatActivity implements MapView, ConnectionCallbacks, OnMapReadyCallback,
         OnMapClickListener, OnMarkerClickListener, OnQueryChangeListener, OnSearchListener, OnBindSuggestionCallback,
         OnFocusChangeListener, OnMenuItemClickListener, OnDrawerItemClickListener, OnDrawerItemLongClickListener,
         StopBookmarkListener, AppUpdateListener, LocationListener {
-
-    private static final String TAG = "MapActivity";
 
     @BindView(R.id.root) CoordinatorLayout clRoot;
     @BindView(R.id.sv_search) FloatingSearchView svSearch;
@@ -117,7 +119,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @InjectPresenter(type = PresenterType.LOCAL) MapPresenter presenter;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
-    private LocationRequest locationRequest = null;
     private BottomSheetBehavior bottomSheetBehavior;
     private Drawer ndStopBookmarks;
     private boolean firstConnect = true;
@@ -130,24 +131,36 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         ButterKnife.bind(this);
         LocaleUtils.setLocale(getBaseContext());
         initializeGoogleMap();
-        initializeBottomSheet();
         initializeGoogleApiClient();
         initializeNavigationDrawer();
         initializeSearchView();
+        initializeBottomSheet();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        googleApiClient.connect();
+        startLocationUpdates();
     }
 
     @Override
     protected void onPause() {
         stopLocationUpdates();
-        googleApiClient.disconnect();
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        if (googleApiClient != null) {
+            googleApiClient.disconnect();
+        }
+        super.onStop();
     }
 
     @Override
@@ -196,7 +209,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     public void onConnected(@Nullable Bundle bundle) {
         if (firstConnect) {
             firstConnect = false;
-            startLocationUpdates();
+            presenter.animateMapCamera(LocationUtils.getAnyLastKnownLatLng(this, googleApiClient), ZOOM_OVERVIEW);
         }
     }
 
@@ -207,7 +220,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        setupMap();
+        presenter.setupGoogleMap();
         presenter.getUpdatedTimestampFromRemoteDatabase();
         presenter.getLatestVersionInfoFromRemoteDatabase(PreferenceUtils.getIgnoreUpdateVersion(this));
         presenter.getAllStopsFromLocalDatabase();
@@ -230,15 +243,11 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     @Override
     public void onLocationChanged(Location location) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
             return;
         }
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        map.setMyLocationEnabled(true);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants.ZOOM_POSITION));
+        presenter.animateMapCamera(new LatLng(location.getLatitude(), location.getLongitude()), ZOOM_OVERVIEW);
     }
 
     @Override
@@ -260,8 +269,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
         Stop stop = (Stop) searchSuggestion;
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(stop.getLatitude(), stop.getLongitude()), Constants.ZOOM_POSITION));
+        presenter.animateMapCamera(new LatLng(stop.getLatitude(), stop.getLongitude()), ZOOM_POSITION);
     }
 
     @Override
@@ -334,6 +342,16 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     //------------------------------------------------------------------------------------------------------------------
 
     @Override
+    public void showProgressBar() {
+        pbLoading.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        pbLoading.setVisibility(View.GONE);
+    }
+
+    @Override
     public void showUpdateStopsSnackbar() {
         Snackbar.make(clRoot, R.string.map_update_stops_message, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.map_update_stops_update, view -> presenter.getAllStopsFromRemoteDatabase())
@@ -346,11 +364,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void initializeMap() {
-        initializeGoogleMap();
-    }
-
-    @Override
     public void showMessage(int messageId) {
         Snackbar.make(clRoot, messageId, Snackbar.LENGTH_SHORT).show();
     }
@@ -358,6 +371,19 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void showToast(int messageId) {
         Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setupGoogleMap() {
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
+            return;
+        }
+
+        map.setMyLocationEnabled(true);
+        map.setBuildingsEnabled(true);
+        map.setOnMapClickListener(this);
+        map.setOnMarkerClickListener(this);
     }
 
     @SuppressLint("UseSparseArrays")
@@ -375,7 +401,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     @Override
     public void showSelectedStop(final Stop stop, final boolean bookmarked, final boolean fromNavDrawer) {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(stop.getLatitude(), stop.getLongitude()),
-                Constants.ZOOM_POSITION),
+                ZOOM_POSITION),
                 new GoogleMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
@@ -409,35 +435,30 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     @Override
-    public void showProgressBar() {
-        pbLoading.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideProgressBar() {
-        pbLoading.setVisibility(View.GONE);
+    public void animateMapCamera(LatLng latLng, float zoomLevel) {
+        if (map == null || latLng == null) {
+            return;
+        }
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    @NeedsPermission({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
     void updateCoordinates() {
-        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        boolean hasProvider = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-                || lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (hasProvider) {
+        if (LocationUtils.hasAnyLocationProvides((LocationManager) getSystemService(LOCATION_SERVICE))) {
             startLocationUpdates();
         } else {
             turnOnLocation();
         }
     }
 
-    @OnShowRationale({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    @OnShowRationale({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
     void showRationaleForLocation(final PermissionRequest request) {
         DialogUtils.showLocationRationaleDialog(this, request);
     }
 
-    @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    @OnPermissionDenied({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
     void onDeniedForLocation() {
         Snackbar.make(clRoot, R.string.map_permission_denied_message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.settings, view -> Navigation.navigateToAppSettings(this))
@@ -468,8 +489,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     private void initializeGoogleMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fr_map);
-        mapFragment.getMapAsync(this);
+        SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fr_map);
+        fragment.getMapAsync(this);
     }
 
     private void initializeGoogleApiClient() {
@@ -530,18 +551,6 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         presenter.getAllStopBookmarksFromLocalDatabase();
     }
 
-    private void setupMap() {
-        UiSettings settings = map.getUiSettings();
-        settings.setCompassEnabled(false);
-        settings.setMyLocationButtonEnabled(false);
-        settings.setMapToolbarEnabled(false);
-        map.setBuildingsEnabled(true);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(Constants.DEFAULT_LATITUDE, Constants.DEFAULT_LONGITUDE), Constants.ZOOM_CITY));
-        map.setOnMapClickListener(this);
-        map.setOnMarkerClickListener(this);
-    }
-
     private void loadWebView(String url) {
         CookieManager.getInstance().setCookie("", CookieUtils.getCookies(getApplicationContext()));
         wvDashboard.clearHistory();
@@ -556,7 +565,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
         for (Stop stop : stops) {
             stopId = stop.getId();
             latLng = new LatLng(stop.getLatitude(), stop.getLongitude());
-            if (zoom >= Constants.ZOOM_OVERVIEW) {
+            if (zoom >= ZOOM_OVERVIEW) {
                 if (latLngBounds.contains(latLng)) {
                     if (!presenter.containsMarker(stopId)) {
                         MarkerWrapper marker = new MarkerWrapper(map.addMarker(new MarkerOptions()
@@ -574,7 +583,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
 
     private void highlightSelectedMarker(Integer key) {
         float zoom = map.getCameraPosition().zoom;
-        if (zoom < Constants.ZOOM_OVERVIEW) {
+        if (zoom < ZOOM_OVERVIEW) {
             return;
         }
         dropMarkerHighlight(zoom);
@@ -604,7 +613,7 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
     }
 
     private void dropMarkerHighlight(float zoom) {
-        presenter.dropMarkerHighlight(zoom, Constants.ZOOM_OVERVIEW);
+        presenter.dropMarkerHighlight(zoom, ZOOM_OVERVIEW);
     }
 
     private void turnOnLocation() {
@@ -612,7 +621,8 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
             googleApiClient.connect();
         }
 
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(getLocationRequest());
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(LocationUtils.getLocationRequest());
         builder.setAlwaysShow(true);
 
         LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
@@ -622,36 +632,26 @@ public class MapActivity extends MvpAppCompatActivity implements MapView, Connec
                         try {
                             status.startResolutionForResult(this, 0x1);
                         } catch (IntentSender.SendIntentException e) {
-                            Log.d(TAG, e.toString());
+                            e.printStackTrace();
                         }
-
                     }
                 });
     }
 
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
             return;
         }
         if (googleApiClient.isConnected() && requestLocationUpdates) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, getLocationRequest(), this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient,
+                    LocationUtils.getLocationRequest(), this);
         }
     }
 
     private void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-    }
-
-    private LocationRequest getLocationRequest() {
-        if (locationRequest == null) {
-            locationRequest = LocationRequest.create();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            locationRequest.setInterval(10000);
-            locationRequest.setFastestInterval(10000 / 2);
+        if (googleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
-        return locationRequest;
     }
 }
